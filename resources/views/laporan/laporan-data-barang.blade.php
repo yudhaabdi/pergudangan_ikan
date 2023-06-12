@@ -12,12 +12,7 @@
                 <div class="col-md-6">
                   <div class="form-group">
                     <label>Masukkan Nama Barang</label>
-                    <select class="form-control select2" name="nama_barang" id="nama_barang" required>
-                      <option value="">semua</option>
-                      @foreach ($nama as $key => $item)
-                          <option value="{{$item->id}}"> {{$item->nama_barang}} / {{$item->size}} / &#64;{{$item->kemasan}} / {{$item->kode}}</option>
-                      @endforeach
-                    </select>
+                    <input type="text" class="form-control" name="nama_barang" id="nama_barang" required autocomplete="off">
                     <small style="color: red" hidden id="validasi">! masukkan nama barang !</small>
                   </div>
                 </div> 
@@ -38,18 +33,17 @@
         </form>
         <button class="btn btn-primary" style="width: 100%" id="btn_cari">CARI</button>
         <div class="row">
-          <table class="table table-bordered data_table" id="tabel_barang">
+          <table class="table table-bordered" id="tabel_barang">
             <thead>
               <tr>
                   <th>NO</th>
+                  <th>Nama Pembeli</th>
                   <th>Nama Barang</th>
                   <th>Kode</th>
-                  <th>No. Kontener</th>
-                  <th>Tanggal</th>
+                  <th>Kemasan</th>
                   <th>QTY</th>
-                  <th>Harga Beli</th>
                   <th>Harga Jual</th>
-                  <th>Keterangan</th>
+                  <th style="width: 140px">Tanggal Pembelian</th>
               </tr>
           </thead>
           <tbody id="tabel_barang_list">
@@ -109,53 +103,60 @@
                 console.log(data);
                 var html = '<tr>';
                 var total_pendapatan = 0;
-                for (let i = 0; i < data.length; i++) {
-                    const D = new Date(data[i].created_at);
-                    let bulan = D.getMonth() + 1;
-                    let nomor = i+1;
-                    // '<td></td>'
-
-                    html += '<td>'+nomor+'</td>';
-                    if (data[i].daftar_piutang == null) {
-                        html += '<td>'+data[i].pembayaran.data_barang.nama_barang+'</td>';
-                        if (data[i].pembayaran.data_barang.kode == null) {
-                            html += '<td>-</td>';
-                        }else{
-                            html += '<td>'+data[i].pembayaran.data_barang.kode+'</td>';
-                        }
-                        if (data[i].pembayaran.data_barang.no_kontener == null) {
-                            html += '<td>-</td>';
-                        }else{
-                            html += '<td>'+data[i].pembayaran.data_barang.no_kontener+'</td>';
-                        }
-                        html += '<td>'+D.getDate()+' - '+bulan+' - '+D.getFullYear()+'</td>';
-                        html += '<td>'+parseInt(data[i].total_transaksi / data[i].pembayaran.data_barang.harga_barang).toLocaleString()+'</td>';
-                        html += '<td>'+parseInt(data[i].pembayaran.data_barang.harga_barang).toLocaleString()+'</td>';
-                        html += '<td>-</td>';
-                        html += '<td>Barang Masuk</td>';
-                    }else{
-                        for (let a = 0; a < data[i].transaksi_detail.length; a++) {
-                            if (data[i].transaksi_detail[a].id_data_barang == nama) {
-                                html += '<td>'+data[i].transaksi_detail[a].data_barang.nama_barang+'</td>';
-                                if (data[i].transaksi_detail[a].data_barang.kode == null) {
-                                    html += '<td>-</td>';
-                                }else{
-                                    html += '<td>'+data[i].transaksi_detail[a].data_barang.kode+'</td>';
-                                }
-                                if (data[i].transaksi_detail[a].data_barang.no_kontener == null) {
-                                    html += '<td>-</td>';
-                                }else{
-                                    html += '<td>'+data[i].transaksi_detail[a].data_barang.no_kontener+'</td>';
-                                }
-                                html += '<td>'+D.getDate()+' - '+bulan+' - '+D.getFullYear()+'</td>';
-                                html += '<td>'+parseInt(data[i].transaksi_detail[a].jumlah_barang).toLocaleString()+'</td>';
-                                html += '<td>'+parseInt(data[i].transaksi_detail[a].data_barang.harga_barang).toLocaleString()+'</td>';
-                                html += '<td>'+parseInt(data[i].transaksi_detail[a].harga_barang).toLocaleString()+'</td>';
-                                html += '<td>Barang Keluar</td>';
-                            }
-                        }
+                var rowspan = 1;
+                for (let i = 0; i < data.transaksi.length; i++) {
+                  const D = new Date(data.transaksi[i].created_at);
+                  let bulan = D.getMonth() + 1;
+                  let nomor = i+1;
+                  
+                  html += '<td>'+nomor+'</td>';
+                  html += '<td>'+data.transaksi[i].daftar_piutang.nama_pembeli+'</td>';
+                  html += '<td>';
+                  for (let a = 0; a < data.transaksi_detail.length; a++) {
+                    if (data.transaksi[i].id == data.transaksi_detail[a].id_transaksi) {
+                      html += '&#8226 '+ data.transaksi_detail[a].data_barang.nama_barang+'<br>';
                     }
-                    html += '</tr>';
+                  }
+                  html += '</td>';
+                  html += '<td>';
+                  for (let a = 0; a < data.transaksi_detail.length; a++) {
+                    if (data.transaksi[i].id == data.transaksi_detail[a].id_transaksi) {
+                      if (data.transaksi_detail[a].data_barang.kode != null) {
+                        html += '&#8226 '+ data.transaksi_detail[a].data_barang.kode+'<br>';
+                      }else{
+                        html += '-<br>';
+                      }
+                    }
+                  }
+                  html += '</td>';
+                  html += '<td>';
+                  for (let a = 0; a < data.transaksi_detail.length; a++) {
+                    if (data.transaksi[i].id == data.transaksi_detail[a].id_transaksi) {
+                      if (data.transaksi_detail[a].data_barang.kemasan != null) {
+                        html += '&#8226 '+ data.transaksi_detail[a].data_barang.kemasan+'<br>';
+                      }else{
+                        html += '-<br>';
+                      }
+                    }
+                  }
+                  html += '</td>';
+                  html += '<td>';
+                  for (let a = 0; a < data.transaksi_detail.length; a++) {
+                    if (data.transaksi[i].id == data.transaksi_detail[a].id_transaksi) {
+                      html += '&#8226 '+ data.transaksi_detail[a].jumlah_barang+'<br>';
+                    }
+                  }
+                  html += '</td>';
+                  html += '<td>';
+                  for (let a = 0; a < data.transaksi_detail.length; a++) {
+                    if (data.transaksi[i].id == data.transaksi_detail[a].id_transaksi) {
+                      html += '&#8226 '+ data.transaksi_detail[a].harga_barang+'<br>';
+                    }
+                  }
+                  html += '</td>';
+                  html += '<td>'+D.getDate()+' - '+bulan+' - '+D.getFullYear()+'</td>';
+                  
+                  html += '</tr>';
                 }
 
             $('#tabel_barang_list').append(html);

@@ -142,33 +142,59 @@ class ControllerLaporan extends Controller
         $start_date = Carbon::parse($request->start)->startOfDay();
         $end_date = Carbon::parse($request->end)->endOfDay();
 
-        if ($request->nama != 'all' && empty($request->start)) {
-            $pembayaran = Transaksi::whereHas('pembayaran', function($query) use($request){
-                $query->where('id_data_barang', $request->nama);
-            });
-            $transaksi_detail = Transaksi::whereHas('transaksi_detail', function($query) use($request){
-                $query->where('id_data_barang', $request->nama);
-            });
-            $transaksi = $transaksi_detail->union($pembayaran);
+        if ($request->nama != '' && empty($request->start)) {
+            // $pembayaran = Transaksi::whereHas('pembayaran', function($query) use($request){
+            //     $query->where('id_data_barang', $request->nama);
+            // });
+            $transaksi = Transaksi::join('transaksi_detail', 'transaksi.id', '=', 'transaksi_detail.id_transaksi')
+                ->join('data_barang', function($query) use($request){
+                    $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
+                    $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama."%"]);
+                })->select('transaksi.*')->DISTINCT('id');
+
+            $transaksi_detail = TransaksiDetail::
+                join('data_barang', function($query) use($request){
+                    $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
+                    $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama."%"]);
+                })->select('transaksi_detail.*');
+
+            
+            // $transaksi = $transaksi_detail->union($pembayaran);
         }
 
-        if ($request->nama != 'all' && !empty($request->start)) {
-            $pembayaran = Transaksi::whereHas('pembayaran', function($query) use($request){
-                $query->where('id_data_barang', $request->nama);
-            })
-            ->whereBetween('created_at', [$start_date, $end_date]);
+        if ($request->nama != '' && !empty($request->start)) {
+            // $pembayaran = Transaksi::whereHas('pembayaran', function($query) use($request){
+            //     $query->where('id_data_barang', $request->nama);
+            // })
+            // ->whereBetween('created_at', [$start_date, $end_date]);
 
-            $transaksi_detail = Transaksi::whereHas('transaksi_detail', function($query) use($request){
-                $query->where('id_data_barang', $request->nama);
-            })
-            ->whereBetween('created_at', [$start_date, $end_date]);
+            $transaksi = Transaksi::join('transaksi_detail', function($query1) use($start_date, $end_date){
+                $query1->on('transaksi.id', '=', 'transaksi_detail.id_transaksi');
+                $query1->whereBetween('transaksi_detail.created_at', [$start_date, $end_date]);
+                })
+                ->join('data_barang', function($query) use($request){
+                    $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
+                    $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama."%"]);
+                })->select('transaksi.*')->DISTINCT('id');
 
-            $transaksi = $transaksi_detail->union($pembayaran);
+            $transaksi_detail = TransaksiDetail::
+                join('data_barang', function($query) use($request){
+                    $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
+                    $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama."%"]);
+                })
+                ->whereBetween('transaksi_detail.created_at', [$start_date, $end_date])
+                ->select('transaksi_detail.*');
+
+            // $transaksi = $transaksi_detail->union($pembayaran);
         }
 
-        $data = $transaksi->with(['transaksi_detail', 'pembayaran.dataBarang', 'daftarPiutang', 'transaksi_detail.dataBarang'])
-        ->orderBy('id', 'asc')
-        ->get();
+        $data1 = $transaksi->with(['transaksi_detail.dataBarang', 'daftarPiutang'])->orderBy('id')->get();
+        $data2 = $transaksi_detail->with(['dataBarang'])->orderBy('id_transaksi')->get();
+
+        $data = [
+            'transaksi' => $data1, 
+            'transaksi_detail' => $data2, 
+        ];
 
         return response()->json($data);
     }

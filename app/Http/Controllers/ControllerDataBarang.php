@@ -90,8 +90,8 @@ class ControllerDataBarang extends Controller
         try {
             $data_barang = DataBarang::find($id);
             $data_barang->nama_barang = $request->nama_barang;
-            $data_barang -> size = $request->size;
-            $data_barang -> kemasan = $request->kemasan;
+            $data_barang->size = $request->size;
+            $data_barang->kemasan = $request->kemasan;
             $data_barang->stok_barang = $request->jumlah_barang;
             $data_barang->kode = $request->kode_barang;
             $data_barang->no_kontener = $request->no_kontener;

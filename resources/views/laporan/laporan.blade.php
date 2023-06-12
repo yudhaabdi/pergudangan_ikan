@@ -66,7 +66,7 @@
                     <div class="card-body" style="padding-block: 50px">
                       <div class="row">
                         <div style="font-family: 'Courier New', Courier, monospace; font-size: 20px; text-align: center">
-                            <p class="card-title">LAPORAN DATA BARANG<p>
+                            <p class="card-title">LAPORAN PENGELUARAN BARANG<p>
                           </div>
                       </div>
                     </div>
