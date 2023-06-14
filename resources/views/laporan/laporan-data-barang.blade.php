@@ -49,6 +49,19 @@
           <tbody id="tabel_barang_list">
           </tbody>
           </table>
+          <h6>Total Barang</h6>
+          <table style="width: 50%">
+            <thead>
+              <tr>
+                <th>Nama Barang</th>
+                <th>Kode</th>
+                <th>Total Barang</th>
+              </tr>
+            </thead>
+            <tbody id="jumlah_Barang_keluar">
+
+            </tbody>
+          </table>
         </div>
     </div>
 @endsection
@@ -77,17 +90,12 @@
 
     $('#btn_cari').click(function(){
       $('#tabel_barang_list').empty();
+      $('#jumlah_Barang_keluar').empty();
       nama = $('#nama_barang').val();
       start = $('#start').val();
       end = $('#end').val();
       let url = "{{url('/laporan/laporan-data-barang/get-data')}}";
-      if (nama != '') {
-        $('#validasi').attr('hidden', true);
-        pencarian(nama, start, end, url);
-      }else{
-        $('#validasi').removeAttr('hidden');
-      }
-
+      pencarian(nama, start, end, url);
     })
 
     function pencarian(nama, start, end, url){
@@ -100,10 +108,9 @@
                 end
             },
             success: function(data){
-                console.log(data);
+                // console.log(data);
                 var html = '<tr>';
-                var total_pendapatan = 0;
-                var rowspan = 1;
+
                 for (let i = 0; i < data.transaksi.length; i++) {
                   const D = new Date(data.transaksi[i].created_at);
                   let bulan = D.getMonth() + 1;
@@ -158,8 +165,19 @@
                   
                   html += '</tr>';
                 }
+                
+                var html2 = '<tr>';
+                for (let x = 0; x < data.total_item.length; x++) {
+                  html2 += '<td>'+data.total_item[x].data_barang.nama_barang+'</td>';
+                  if (data.total_item[x].data_barang.kode != null) {
+                    html2 += '<td>'+data.total_item[x].data_barang.kode+'</td>';
+                  }else{html2 += '<td>-</td>'}
+                  html2 += '<td>'+data.total_item[x].total_barang+'</td>';
+                  html2 += '</tr>';
+                }
 
             $('#tabel_barang_list').append(html);
+            $('#jumlah_Barang_keluar').append(html2);
             }
         })
     }

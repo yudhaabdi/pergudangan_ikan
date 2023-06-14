@@ -10,6 +10,7 @@ use App\Model\DaftarPiutang;
 use App\DataBarang;
 use Carbon\Carbon;
 use Session;
+use DB;
 
 class ControllerLaporan extends Controller
 {
@@ -62,19 +63,31 @@ class ControllerLaporan extends Controller
         $start_date = Carbon::parse($request->start)->startOfDay();
         $end_date = Carbon::parse($request->end)->endOfDay();
 
-        if ($request->nama != 'all' && $request->nama != 'pabrik') {
+        if ($request->nama != 'all' && $request->nama != 'pabrik' && $request->nama != 'penyusutan') {
             $pembayaran->where('id_piutang', $request->nama);
         }
 
         if ($request->nama == 'pabrik') {
-            $pembayaran->where('id_piutang', null);
+            $pembayaran->where('pembayaran.id_piutang', null)
+                ->join('transaksi', function($query){
+                    $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+                    $query->where('transaksi.penyusutan', null);
+                });
+        }
+
+        if ($request->nama == 'penyusutan') {
+            $pembayaran->where('pembayaran.id_piutang', null)
+                ->join('transaksi', function($query){
+                    $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+                    $query->where('transaksi.penyusutan', 1);
+                });
         }
 
         if (!empty($request->start) && !empty($request->end)) {
             $pembayaran->whereBetween('created_at', [$start_date, $end_date]);
         }
 
-        $data = $pembayaran->get();
+        $data = $pembayaran->select('pembayaran.*')->get();
 
         return response()->json($data);
     }
@@ -142,32 +155,7 @@ class ControllerLaporan extends Controller
         $start_date = Carbon::parse($request->start)->startOfDay();
         $end_date = Carbon::parse($request->end)->endOfDay();
 
-        if ($request->nama != '' && empty($request->start)) {
-            // $pembayaran = Transaksi::whereHas('pembayaran', function($query) use($request){
-            //     $query->where('id_data_barang', $request->nama);
-            // });
-            $transaksi = Transaksi::join('transaksi_detail', 'transaksi.id', '=', 'transaksi_detail.id_transaksi')
-                ->join('data_barang', function($query) use($request){
-                    $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
-                    $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama."%"]);
-                })->select('transaksi.*')->DISTINCT('id');
-
-            $transaksi_detail = TransaksiDetail::
-                join('data_barang', function($query) use($request){
-                    $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
-                    $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama."%"]);
-                })->select('transaksi_detail.*');
-
-            
-            // $transaksi = $transaksi_detail->union($pembayaran);
-        }
-
-        if ($request->nama != '' && !empty($request->start)) {
-            // $pembayaran = Transaksi::whereHas('pembayaran', function($query) use($request){
-            //     $query->where('id_data_barang', $request->nama);
-            // })
-            // ->whereBetween('created_at', [$start_date, $end_date]);
-
+        if ($request->nama != '' || isset($request->start)) {
             $transaksi = Transaksi::join('transaksi_detail', function($query1) use($start_date, $end_date){
                 $query1->on('transaksi.id', '=', 'transaksi_detail.id_transaksi');
                 $query1->whereBetween('transaksi_detail.created_at', [$start_date, $end_date]);
@@ -182,18 +170,20 @@ class ControllerLaporan extends Controller
                     $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
                     $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama."%"]);
                 })
-                ->whereBetween('transaksi_detail.created_at', [$start_date, $end_date])
-                ->select('transaksi_detail.*');
-
-            // $transaksi = $transaksi_detail->union($pembayaran);
+                ->whereBetween('transaksi_detail.created_at', [$start_date, $end_date]);
         }
-
+        
         $data1 = $transaksi->with(['transaksi_detail.dataBarang', 'daftarPiutang'])->orderBy('id')->get();
-        $data2 = $transaksi_detail->with(['dataBarang'])->orderBy('id_transaksi')->get();
+        $data2 = $transaksi_detail->with(['dataBarang'])->select('transaksi_detail.*')->orderBy('id_transaksi')->get();
+        $data3 = $transaksi_detail->with(['dataBarang'])
+        ->select('transaksi_detail.id_data_barang', DB::raw("SUM(transaksi_detail.jumlah_barang) as total_barang"))
+        ->groupBy('transaksi_detail.id_data_barang')
+        ->get();
 
         $data = [
             'transaksi' => $data1, 
             'transaksi_detail' => $data2, 
+            'total_item' => $data3, 
         ];
 
         return response()->json($data);

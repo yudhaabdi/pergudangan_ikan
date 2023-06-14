@@ -13,7 +13,8 @@
               <label>Masukkan Nama</label>
               <select class="form-control select2" name="nama_pembeli" id="nama_pembeli">
                 <option value="all">semua</option>
-                <option value="pabrik">pabrik</option>
+                <option value="pabrik">Pabrik</option>
+                <option value="penyusutan">Penyusutan</option>
                 @foreach ($nama as $key => $item)
                     <option value="{{$item->id}}"> {{$item->nama_pembeli}} </option>
                 @endforeach

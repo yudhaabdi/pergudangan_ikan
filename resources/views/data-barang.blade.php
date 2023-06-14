@@ -13,7 +13,7 @@
         <div class="row" style="margin-bottom: 50px;">
             <div class="col-md-4">
                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#tambah_barang">
-                    Tambah Barang
+                    Pembelian Barang
                 </button>
             </div>
             <div class="col-md-4"></div>
@@ -92,6 +92,8 @@
                 }
                 $('#pemilik_barang').val(data.data_barang.nama_pemilik);
                 $('#nama_barang').val(data.data_barang.nama_barang);
+                $('#size').val(data.data_barang.size);
+                $('#kemasan').val(data.data_barang.kemasan);
                 $('#jumlah_barang').val(data.data_barang.stok_barang);
                 $('#harga_barang').val(data.data_barang.harga_barang);
                 $('#kode_barang').val(data.data_barang.kode);

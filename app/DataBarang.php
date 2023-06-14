@@ -17,7 +17,7 @@ class DataBarang extends Model
     }
 
     public function transaksiDetail(){
-    	return $this->hashMany('App\model\TransaksiDetail');
+    	return $this->hashMany('App\Model\TransaksiDetail', 'id');
     }
 
     public function pendapatan(){
