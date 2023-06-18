@@ -16,7 +16,7 @@ route::get('/login', 'ControllerLogin@login')->name('login');
 Route::post('loginaksi', 'ControllerLogin@loginaksi')->name('loginaksi');
 Route::get('logoutaksi', 'ControllerLogin@logoutaksi')->name('logoutaksi');
 
-Route::group(['middleware' =>  ['auth', 'admin:admin']], function () {
+Route::group(['middleware' =>  ['auth', 'admin:admin 1,kasir 1,admin 2,kasir 2']], function () {
     Route::get('/', function () {
         return view('welcome');
     });
@@ -86,5 +86,12 @@ Route::group(['middleware' =>  ['auth', 'admin:admin']], function () {
     route::get('/data-karyawan/hapus/{id}', 'ControllerKaryawan@hapus');
     route::get('/data-karyawan/gaji-semua', 'ControllerKaryawan@gajiSemua');
     route::get('/data-karyawan/gaji/{id}', 'ControllerKaryawan@gaji');
+
+    //Pengaturan Akun
+    route::get('/pengaturan-akun', 'ControllerTambahAkun@index');
+    route::post('/pengaturan-akun/tambah-akun', 'ControllerTambahAkun@tambah');
+    route::get('/pengaturan-akun/edit/{id}', 'ControllerTambahAkun@getData');
+    route::post('/pengaturan-akun/edit/{id}', 'ControllerTambahAkun@editData');
+    route::get('/pengaturan-akun/hapus/{id}', 'ControllerTambahAkun@hapus');
 });
 

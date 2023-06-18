@@ -1,18 +1,19 @@
 @extends('template.main')
 @section('title')
-    LAPORAN DATA BARANG
+    LAPORAN PENGELUARAN BARANG
 @endsection
 @section('jenis_tampilan')
-    / LAPORAN DATA BARANG
+    / LAPORAN PENGELUARAN BARANG
 @endsection
 @section('content')
     <div class="content">
-        <form action="javascript:void(0)">
+        <form action="{{url('/laporan/laporan-data-barang/get-data')}}">
             <div class="row">
                 <div class="col-md-6">
+                  <input type="text" name="print" hidden value="print">
                   <div class="form-group">
                     <label>Masukkan Nama Barang</label>
-                    <input type="text" class="form-control" name="nama_barang" id="nama_barang" required autocomplete="off">
+                    <input type="text" class="form-control" name="nama_barang" id="nama_barang" autocomplete="off">
                     <small style="color: red" hidden id="validasi">! masukkan nama barang !</small>
                   </div>
                 </div> 
@@ -30,6 +31,7 @@
                   </div>
                 </div>
             </div>
+            <button type="submit" class="btn btn-success" formtarget="_blank" style="width: 100%" id="btn_cetak" hidden>CETAK</button>
         </form>
         <button class="btn btn-primary" style="width: 100%" id="btn_cari">CARI</button>
         <div class="row">
@@ -91,9 +93,10 @@
     $('#btn_cari').click(function(){
       $('#tabel_barang_list').empty();
       $('#jumlah_Barang_keluar').empty();
-      nama = $('#nama_barang').val();
-      start = $('#start').val();
-      end = $('#end').val();
+      $('#btn_cetak').removeAttr('hidden');
+      nama_barang = $('#nama_barang').val();
+      start_date = $('#start').val();
+      end_date = $('#end').val();
       let url = "{{url('/laporan/laporan-data-barang/get-data')}}";
       pencarian(nama, start, end, url);
     })
@@ -103,12 +106,11 @@
             url: url,
             type: "GET",
             data: {
-                nama,
-                start,
-                end
+              nama_barang,
+              start_date,
+              end_date
             },
             success: function(data){
-                // console.log(data);
                 var html = '<tr>';
 
                 for (let i = 0; i < data.transaksi.length; i++) {
@@ -131,7 +133,7 @@
                       if (data.transaksi_detail[a].data_barang.kode != null) {
                         html += '&#8226 '+ data.transaksi_detail[a].data_barang.kode+'<br>';
                       }else{
-                        html += '-<br>';
+                        html += '&#8226 <br>';
                       }
                     }
                   }
@@ -142,7 +144,7 @@
                       if (data.transaksi_detail[a].data_barang.kemasan != null) {
                         html += '&#8226 '+ data.transaksi_detail[a].data_barang.kemasan+'<br>';
                       }else{
-                        html += '-<br>';
+                        html += '&#8226 <br>';
                       }
                     }
                   }

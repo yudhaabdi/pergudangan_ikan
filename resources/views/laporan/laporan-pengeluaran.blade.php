@@ -7,8 +7,10 @@
 @endsection
 @section('content')
     <div class="content">
+      <form action="{{url('/laporan/laporan-pengeluaran/get-data')}}">
         <div class="row">
           <div class="col-md-6">
+            <input type="text" name="print" hidden value="print">
             <div class="form-group">
               <label>Masukkan Nama</label>
               <select class="form-control select2" name="nama_pembeli" id="nama_pembeli">
@@ -35,7 +37,9 @@
             </div>
           </div>   
         </div>
-        <button class="btn btn-primary" style="width: 100%" id="btn_cari">CARI</button>
+        <button type="submit" class="btn btn-success" formtarget="_blank" style="width: 100%" id="btn_cetak" hidden>CETAK</button>
+      </form>
+      <button class="btn btn-primary" style="width: 100%" id="btn_cari">CARI</button>
         <div class="row">
           <table class="table table-bordered" id="tabel_pengeluaran">
             <thead>
@@ -80,18 +84,19 @@
 
     $('#btn_cari').click(function(){
       $('#tabel_pengeluaran_list').empty();
-      nama = $('#nama_pembeli').val();
-      start = $('#start').val();
-      end = $('#end').val();
+      $('#btn_cetak').removeAttr('hidden');
+      nama_pembeli = $('#nama_pembeli').val();
+      start_date = $('#start').val();
+      end_date = $('#end').val();
 
       let url = "{{url('/laporan/laporan-pengeluaran/get-data')}}";
       $.ajax({
         url: url,
         type: "GET",
         data: {
-            nama,
-            start,
-            end
+          nama_pembeli,
+          start_date,
+          end_date
         },
         success: function(data){
 
@@ -118,21 +123,21 @@
             }else{
               html += '<td>'+data[i].data_barang.nama_barang+'</td>';
             }
-            if (data[i].id_data_barang != null) {
-              qty = data[i].jumlah_uang / data[i].data_barang.harga_barang;
+            if (data[i].id_data_barang != null && data[i].transaksi.penyusutan == null) {
+              qty = data[i].transaksi.qty;
               html += '<td>'+parseInt(qty).toLocaleString()+'</td>';
               html += '<td>Rp. '+parseInt(data[i].data_barang.harga_barang).toLocaleString()+'</td>';
-            }else if(data[i].id_data_barang != null && data[i].transaksi.penyusutan == 1){
+            }if(data[i].id_data_barang != null && data[i].transaksi.penyusutan == 1){
               qty = data[i].jumlah_uang / data[i].data_barang.harga_barang;
               html += '<td>'+parseInt(qty).toLocaleString()+'</td>';
               html += '<td>Rp. '+parseInt(data[i].data_barang.harga_barang).toLocaleString()+'</td>';
             }
-            else{
+            if(data[i].lain_lain != null && data[i].id_data_barang == null){
               html += '<td></td><td></td>';
             }
-            html += '<td>Rp. '+parseInt(data[i].jumlah_uang).toLocaleString()+'</td>'
+            html += '<td>Rp. '+parseInt(data[i].transaksi.total_transaksi).toLocaleString()+'</td>'
             html += '</tr>';
-            total_pengeluaran = total_pengeluaran + data[i].jumlah_uang;
+            total_pengeluaran = total_pengeluaran + data[i].transaksi.total_transaksi;
           }
           html += '<tr><td colspan="6" style="text-align: center;">Total Pengeluaran</td>';
           html += '<td> Rp. '+parseInt(total_pengeluaran).toLocaleString()+'</td></tr>'

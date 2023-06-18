@@ -9,12 +9,17 @@ use App\Model\TransaksiDetail;
 use App\Model\DaftarPiutang;
 use App\Model\Pendapatan;
 use App\Model\Pembayaran;
+use Auth;
 
 class ControllerTransaksi extends Controller
 {
     function index(){
         $cart = session('cart');
-        $data_barang = DataBarang::where('stok_barang', '>', 0)->get();
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $data_barang = DataBarang::where('stok_barang', '>', 0)->where('gudang', 1)->get();
+        }else{
+            $data_barang = DataBarang::where('stok_barang', '>', 0)->where('gudang', 2)->get();
+        }
         // session()->forget('cart');
         return view('transaksi', compact('cart', 'data_barang'));
     }
@@ -24,7 +29,12 @@ class ControllerTransaksi extends Controller
 
         $barang = DataBarang::detail_barang($request->nama_barang);
 
-        $cart [$request->nama_barang] = [
+        if (empty($cart)) {
+            $nomor = 0;
+        }else{
+            $nomor = count($cart);
+        }
+        $cart [$nomor] = [
             "id" => $barang->id,
             "nama_barang" => $barang->nama_barang,
             "jumlah_barang" => $request->jumlah_barang,
@@ -55,6 +65,11 @@ class ControllerTransaksi extends Controller
             $tambah_piutang = new DaftarPiutang;
             $tambah_piutang->nama_pembeli = $request->nama_pembeli;
             $tambah_piutang->total_hutang = $sisa;
+            if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+                $tambah_piutang->gudang = 1;
+            }else{
+                $tambah_piutang->gudang = 2;
+            }
             $tambah_piutang->save();
         }else{
             $tambah_piutang = DaftarPiutang::where('nama_pembeli', $request->nama_pembeli)->first();
@@ -83,6 +98,11 @@ class ControllerTransaksi extends Controller
             $transaksi->kekurangan = $sisa;
         }else{
             $transaksi->kekurangan = 0;
+        }
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $transaksi->gudang = 1;
+        }else{
+            $transaksi->gudang = 2;
         }
         $transaksi->save();
 

@@ -7,8 +7,10 @@
 @endsection
 @section('content')
     <div class="content">
+      <form action="{{url('/laporan/laporan-pemasukan/get-data')}}">
         <div class="row">
           <div class="col-md-6">
+            <input type="text" name="print" hidden value="print">
             <div class="form-group">
               <label>Masukkan Nama</label>
               <select class="form-control select2" name="nama_pembeli" id="nama_pembeli">
@@ -33,7 +35,9 @@
             </div>
           </div>   
         </div>
-        <button class="btn btn-primary" style="width: 100%" id="btn_cari">CARI</button>
+        <button type="submit" class="btn btn-success" formtarget="_blank" style="width: 100%" id="btn_cetak" hidden>CETAK</button>
+      </form>
+      <button class="btn btn-primary" style="width: 100%" id="btn_cari">CARI</button>
         <div class="row">
           <table class="table table-bordered data_table" id="tabel_pendapatan">
             <thead>
@@ -79,18 +83,19 @@
 
     $('#btn_cari').click(function(){
       $('#tabel_pendapatan_list').empty();
-      nama = $('#nama_pembeli').val();
-      start = $('#start').val();
-      end = $('#end').val();
+      $('#btn_cetak').removeAttr('hidden');
+      nama_pembeli = $('#nama_pembeli').val();
+      start_date = $('#start').val();
+      end_date = $('#end').val();
 
       let url = "{{url('/laporan/laporan-pemasukan/get-data')}}";
       $.ajax({
         url: url,
         type: "GET",
         data: {
-            nama,
-            start,
-            end
+            nama_pembeli,
+            start_date,
+            end_date
         },
         success: function(data){
           console.log(data);
@@ -136,7 +141,7 @@
             html += '</tr>';
             total_pendapatan = total_pendapatan + data[i].jumlah_uang;
           }
-          html += '<tr><td colspan="6" style="text-align: center;">Total Pendapatan</td>';
+          html += '<tr><td colspan="7" style="text-align: center;">Total Pendapatan</td>';
           html += '<td> Rp. '+parseInt(total_pendapatan).toLocaleString()+'</td></tr>'
 
           $('#tabel_pendapatan_list').append(html);

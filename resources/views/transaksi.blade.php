@@ -73,13 +73,13 @@
     
                                 @foreach($cart as $key => $item)
                                     @php $sub_total = $item['jumlah_barang'] * $item['harga_barang']; @endphp
-                                    <tr id="tabel_1">
+                                    <tr class="tabel_1">
                                         <td>{{ $no++ }}</td>   
                                         <td>{{ $item['nama_barang'] }}</td>                             
                                         <td>{{ $item['jumlah_barang'] }} Kg</td>                             
                                         <td>Rp. {{ number_format($item['harga_barang']) }}</td>                             
                                         <td>Rp. {{ number_format($sub_total) }}</td>                            
-                                        <td><a href="{{ url('/transaksi/shopping-chart/delete/'.$item['id'].'') }}" class="btn btn-danger">Hapus</a></td>                             
+                                        <td><a href="{{ url('/transaksi/shopping-chart/delete/'.$key.'') }}" class="btn btn-danger">Hapus</a></td>                             
                                     </tr>
                                     <input type="text" name="id_barang[]" value="{{ $item['id'] }}" hidden>
                                     <input type="text" name="jumlah_barang[]" value="{{ $item['jumlah_barang'] }}" hidden>
@@ -87,7 +87,7 @@
                                     <input type="text" name="sub_total[]" value="{{ $sub_total }}" hidden>
                                     @php $grandtotal += $sub_total; @endphp
                                 @endforeach
-                                <tr id="tabel_2">
+                                <tr class="tabel_2">
                                     <td colspan="4" style="text-align: center">total belanja </td>
                                     <td colspan="2">Rp. {{ number_format($grandtotal) }}</td>
                                     <input type="text" name="total_belanja" value="{{ $grandtotal }}" hidden>
@@ -181,10 +181,11 @@
                                 timer: 3000
                             });
                             // window.location.reload(true);
-                            $(`#tabel_1`).remove();
-                            $(`#tabel_2`).remove();
-                            $(`#nama_bank`).val('');
-                            $(`#jumlah_uang`).val('');
+                            $('.tabel_1').empty();
+                            $('.tabel_2').empty();
+                            $('#nama_bank').val('');
+                            $('#jumlah_uang').val('');
+                            $('#nama_pembeli').val('');
                         }
                     });
 

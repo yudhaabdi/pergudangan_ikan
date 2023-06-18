@@ -72,7 +72,7 @@
                                         <td>Rp. {{ number_format($item['harga_barang']) }}</td>                             
                                         <td>Rp. {{ number_format($sub_total) }}</td>                             
                                         <td>
-                                            <a href="{{ url('/transaksi-detail-return/'.$transaksi[0]->id_transaksi.'/shopping-chart/delete/'.$item['id'].'') }}" class="btn btn-danger">Hapus</a>
+                                            <a href="{{ url('/transaksi-detail-return/'.$transaksi[0]->id_transaksi.'/shopping-chart/delete/'.$key.'') }}" class="btn btn-danger">Hapus</a>
                                         </td>                             
                                     </tr>
                                     <input type="text" name="id_barang[]" value="{{ $item['id'] }}" hidden>

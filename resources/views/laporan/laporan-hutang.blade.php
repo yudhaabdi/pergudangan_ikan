@@ -7,8 +7,10 @@
 @endsection
 @section('content')
     <div class="content">
+      <form action="{{url('/laporan/laporan-hutang/get-data')}}">
         <div class="row">
           <div class="col-md-6">
+            <input type="text" name="print" hidden value="print">
             <div class="form-group">
               <label>Masukkan Nama</label>
               <select class="form-control select2" name="nama_pembeli" id="nama_pembeli">
@@ -33,6 +35,8 @@
             </div>
           </div>   
         </div>
+        <button type="submit" class="btn btn-success" formtarget="_blank" style="width: 100%" id="btn_cetak" hidden>CETAK</button>
+      </form>
         <button class="btn btn-primary" style="width: 100%" id="btn_cari">CARI</button>
         <div class="row">
           <table class="table table-bordered" id="tabel_pengeluaran" style="font-size: 15px">
@@ -81,18 +85,19 @@
 
     $('#btn_cari').click(function(){
       $('#tabel_pengeluaran_list').empty();
-      nama = $('#nama_pembeli').val();
-      start = $('#start').val();
-      end = $('#end').val();
+      $('#btn_cetak').removeAttr('hidden');
+      nama_pembeli = $('#nama_pembeli').val();
+      start_date = $('#start').val();
+      end_date = $('#end').val();
 
       let url = "{{url('/laporan/laporan-hutang/get-data')}}";
       $.ajax({
         url: url,
         type: "GET",
         data: {
-            nama,
-            start,
-            end
+          nama_pembeli,
+          start_date,
+          end_date
         },
         success: function(data){
 

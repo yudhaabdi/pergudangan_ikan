@@ -29,16 +29,18 @@
               <p>TRANSAKSI DETAIL</p>
             </a>
           </li>
-          <li>
-            <a href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-              <i class="fa fa-money"></i>
-              <p>DATA PIUTANG</p>
-            </a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="{{ url('/hutang') }}">PIUTANG PEGAWAI / PEMBELI</a>
-              <a class="dropdown-item" href="{{ url('/hutang/perusahaan') }}">PIUTANG PERUSAHAAN</a>
-            </div>
-          </li>
+          @if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'admin 2')
+            <li>
+              <a href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-money"></i>
+                <p>DATA PIUTANG</p>
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="{{ url('/hutang') }}">PIUTANG PEGAWAI / PEMBELI</a>
+                <a class="dropdown-item" href="{{ url('/hutang/perusahaan') }}">PIUTANG PERUSAHAAN</a>
+              </div>
+            </li>
+          @endif
           <li>
             <a href="{{ url('/pendapatan-lain') }}">
               <i class="fa fa-money"></i>
@@ -57,12 +59,20 @@
               <p>LAPORAN</p>
             </a>
           </li>
+          @if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'admin 2')
           <li>
             <a href="{{ url('/data-karyawan') }}">
               <i class="fa fa-users"></i>
               <p>Data Karyawan</p>
             </a>
           </li>
+            <li>
+              <a href="{{ url('/pengaturan-akun') }}">
+                <i class="fa fa-users"></i>
+                <p>Pengaturan Akun</p>
+              </a>
+            </li>
+          @endif
           {{-- <li>
             <a href="./notifications.html">
               <i class="nc-icon nc-bell-55"></i>

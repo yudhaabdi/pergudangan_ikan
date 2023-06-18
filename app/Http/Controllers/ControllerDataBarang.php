@@ -6,6 +6,7 @@ use App\Model\Pembayaran;
 use App\Model\Transaksi;
 use App\Model\HutangPerusahaan;
 use DataTables;
+use Auth;
 
 use Illuminate\Http\Request;
 
@@ -13,7 +14,11 @@ class ControllerDataBarang extends Controller
 {
     public function index(){
 
-        $data_barang = DataBarang::where('stok_barang', '>', 0)->where('hapus', 0)->get();
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $data_barang = DataBarang::where('stok_barang', '>', 0)->where('hapus', 0)->where('gudang', 1)->get();
+        }else {
+            $data_barang = DataBarang::where('stok_barang', '>', 0)->where('hapus', 0)->where('gudang', 2)->get();
+        }
       
         return view('data-barang', ['data_barang' => $data_barang]);
     }
@@ -22,14 +27,19 @@ class ControllerDataBarang extends Controller
     {
         try {
             $data_barang = new DataBarang;
-            $data_barang -> nama_barang = $request->nama_barang;
-            $data_barang -> size = $request->size;
-            $data_barang -> kemasan = $request->kemasan;
-            $data_barang -> stok_barang = $request->jumlah_barang;
-            $data_barang -> kode = $request->kode_barang;
-            $data_barang -> no_kontener = $request->no_kontener;
-            $data_barang -> harga_barang = $request->harga_barang;
-            $data_barang -> hapus = 0;
+            $data_barang->nama_barang = $request->nama_barang;
+            $data_barang->size = $request->size;
+            $data_barang->kemasan = $request->kemasan;
+            $data_barang->stok_barang = $request->jumlah_barang;
+            $data_barang->kode = $request->kode_barang;
+            $data_barang->no_kontener = $request->no_kontener;
+            $data_barang->harga_barang = $request->harga_barang;
+            $data_barang->hapus = 0;
+            if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+                $data_barang->gudang = 1;
+            }else {
+                $data_barang->gudang = 2;
+            }
             $data_barang->save();
 
             $total_transaksi = $request->jumlah_barang * $request->harga_barang;
@@ -47,6 +57,11 @@ class ControllerDataBarang extends Controller
             $hutang->nama_pemilik = $request->pemilik_barang;
             $hutang->id_barang = $data_barang->id;
             $hutang->hutang = $total_transaksi - $request->jumlah_uang;
+            if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+                $hutang->gudang = 1;
+            }else {
+                $hutang->gudang = 2;
+            }
             $hutang->save();
 
             $transaksi = new Transaksi;
@@ -55,6 +70,12 @@ class ControllerDataBarang extends Controller
             $transaksi->total_transaksi = $total_transaksi;
             $transaksi->kekurangan = $total_transaksi - $request->jumlah_uang;
             $transaksi->tunggakan = 1;
+            $transaksi->qty = $request->jumlah_barang;
+            if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+                $transaksi->gudang = 1;
+            }else{
+                $transaksi->gudang = 2;
+            }
             $transaksi->save();
             
         } catch (\Exception $e) {
@@ -120,6 +141,7 @@ class ControllerDataBarang extends Controller
 
                 $transaksi->total_transaksi = $total_transaksi;
                 $transaksi->kekurangan = $total_transaksi - $request->jumlah_uang;
+                $transaksi->qty = $request->jumlah_barang;
                 $transaksi->save();
             }
             
@@ -171,6 +193,11 @@ class ControllerDataBarang extends Controller
             $data_barang -> no_kontener = $request->no_kontener;
             $data_barang -> hapus = 0;
             $data_barang -> lama = 1;
+            if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+                $data_barang->gudang = 1;
+            }else{
+                $data_barang->gudang = 2;
+            }
             $data_barang->save();
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -196,6 +223,11 @@ class ControllerDataBarang extends Controller
         $transaksi->id_pembayaran = $pembayaran->id;
         $transaksi->total_transaksi = $total_uang;
         $transaksi->penyusutan = 1;
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $transaksi->gudang = 1;
+        }else{
+            $transaksi->gudang = 2;
+        }
         $transaksi->save();
 
         $data_barang->stok_barang = 0;

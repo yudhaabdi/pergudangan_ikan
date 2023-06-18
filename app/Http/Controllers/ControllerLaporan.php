@@ -10,7 +10,9 @@ use App\Model\DaftarPiutang;
 use App\DataBarang;
 use Carbon\Carbon;
 use Session;
+use PDF;
 use DB;
+use Auth;
 
 class ControllerLaporan extends Controller
 {
@@ -21,103 +23,167 @@ class ControllerLaporan extends Controller
 
     public function pemasukan()
     {
-        $nama = DaftarPiutang::whereHas('pembayaran', function($query){
-            $query->where('pendapatan', 1);
-        })->get();
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $nama = DaftarPiutang::whereHas('pembayaran', function($query){
+                $query->where('pendapatan', 1);
+            })->where('gudang', 1)
+            ->get();
+        }else{
+            $nama = DaftarPiutang::whereHas('pembayaran', function($query){
+                $query->where('pendapatan', 1);
+            })->where('gudang', 2)
+            ->get();
+        }
         return view('laporan.laporan-pendapatan', compact(['nama']));
     }
 
     public function getData(Request $request)
     {
-        $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang'])
-        ->where('pendapatan', 1);
-
-        $start_date = Carbon::parse($request->start)->startOfDay();
-        $end_date = Carbon::parse($request->end)->endOfDay();
-
-        if ($request->nama != 'all') {
-            $pembayaran->where('id_piutang', $request->nama);
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang'])
+            ->where('pembayaran.pendapatan', 1)
+            ->join('transaksi', function($query){
+                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+                $query->where('transaksi.gudang', 1);
+            })->select('pembayaran.*');            
+        }else{
+            $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang'])
+            ->where('pembayaran.pendapatan', 1)
+            ->join('transaksi', function($query){
+                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+                $query->where('transaksi.gudang', 2);
+            })->select('pembayaran.*');            
         }
 
-        if (!empty($request->start) && !empty($request->end)) {
-            $pembayaran->whereBetween('created_at', [$start_date, $end_date]);
+        $start_date = Carbon::parse($request->start_date)->startOfDay();
+        $end_date = Carbon::parse($request->end_date)->endOfDay();
+
+        if ($request->nama_pembeli != 'all') {
+            $pembayaran->where('pembayaran.id_piutang', $request->nama_pembeli);
+        }
+
+        if (!empty($request->start_date) && !empty($request->start_date)) {
+            $pembayaran->whereBetween('pembayaran.created_at', [$start_date, $end_date]);
         }
 
         $data = $pembayaran->get();
+
+        if (!empty($request->print)) {
+            $pdf = PDF::loadView('print.laporan-pemasukan', ['data'=>$data, 'start_date'=>$start_date, 'end_date'=>$end_date, 'start'=>$request->start_date]);
+            return $pdf->stream();
+        }else {
+            return response()->json($data);
+        }
         
-        return response()->json($data);
     }
 
     public function pengeluaran()
     {
-        $nama = DaftarPiutang::whereHas('pembayaran', function($query){
-            $query->where('pendapatan', 2);
-        })->get();
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $nama = DaftarPiutang::whereHas('pembayaran', function($query){
+                $query->where('pendapatan', 2);
+            })->where('gudang', 1)->get();
+        }else{
+            $nama = DaftarPiutang::whereHas('pembayaran', function($query){
+                $query->where('pendapatan', 2);
+            })->where('gudang', 2)->get();
+        }
         return view('laporan.laporan-pengeluaran', compact(['nama']));
     }
 
     public function getDataPengeluaran(Request $request)
     {
-        $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'dataBarang'])->where('pendapatan', 2);
-
-        $start_date = Carbon::parse($request->start)->startOfDay();
-        $end_date = Carbon::parse($request->end)->endOfDay();
-
-        if ($request->nama != 'all' && $request->nama != 'pabrik' && $request->nama != 'penyusutan') {
-            $pembayaran->where('id_piutang', $request->nama);
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang', 'dataBarang'])
+            ->where('pembayaran.pendapatan', 2)
+            ->join('transaksi', function($query){
+                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+                $query->where('transaksi.gudang', 1);
+            });            
+        }else{
+            $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang', 'dataBarang'])
+            ->where('pembayaran.pendapatan', 2)
+            ->join('transaksi', function($query){
+                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+                $query->where('transaksi.gudang', 2);
+            });            
         }
 
-        if ($request->nama == 'pabrik') {
+        $start_date = Carbon::parse($request->start_date)->startOfDay();
+        $end_date = Carbon::parse($request->end_date)->endOfDay();
+
+        if ($request->nama_pembeli != 'all' && $request->nama_pembeli != 'pabrik' && $request->nama_pembeli != 'penyusutan') {
+            $pembayaran->where('pembayaran.id_piutang', $request->nama_pembeli);
+        }
+
+        if ($request->nama_pembeli == 'pabrik') {
             $pembayaran->where('pembayaran.id_piutang', null)
-                ->join('transaksi', function($query){
-                    $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
-                    $query->where('transaksi.penyusutan', null);
-                });
+                ->where('transaksi.penyusutan', null);
         }
 
-        if ($request->nama == 'penyusutan') {
+        if ($request->nama_pembeli == 'penyusutan') {
             $pembayaran->where('pembayaran.id_piutang', null)
-                ->join('transaksi', function($query){
-                    $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
-                    $query->where('transaksi.penyusutan', 1);
-                });
+                ->where('transaksi.penyusutan', 1);
         }
 
-        if (!empty($request->start) && !empty($request->end)) {
-            $pembayaran->whereBetween('created_at', [$start_date, $end_date]);
+        if (!empty($request->start_date) && !empty($request->end_date)) {
+            $pembayaran->whereBetween('pembayaran.created_at', [$start_date, $end_date]);
         }
 
         $data = $pembayaran->select('pembayaran.*')->get();
 
-        return response()->json($data);
+        if (!empty($request->print)) {
+            $pdf = PDF::loadView('print.laporan-pengeluaran', ['data'=>$data, 'start_date'=>$start_date, 'end_date'=>$end_date, 'start'=>$request->start_date]);
+            return $pdf->stream();
+        }else {
+            return response()->json($data);
+        }
     }
 
     public function hutang()
     {
-        $nama = DaftarPiutang::all();
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $nama = DaftarPiutang::where('gudang', 1)->get();
+        }else {
+            $nama = DaftarPiutang::where('gudang', 2)->get();
+        }
         return view('laporan.laporan-hutang', compact(['nama']));
 
     }
 
     public function getDataHutang(Request $request)
     {
-        $start_date = Carbon::parse($request->start)->startOfDay();
-        $end_date = Carbon::parse($request->end)->endOfDay();
+        $start_date = Carbon::parse($request->start_date)->startOfDay();
+        $end_date = Carbon::parse($request->end_date)->endOfDay();
 
-        $transaksi = Transaksi::with(['transaksi_detail', 'pembayaran', 'daftarPiutang', 'transaksi_detail.dataBarang'])
-            ->whereNotNull('id_piutang');
-
-        if ($request->nama != 'all') {
-            $transaksi->where('id_piutang', $request->nama);
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $transaksi = Transaksi::with(['transaksi_detail', 'pembayaran', 'daftarPiutang', 'transaksi_detail.dataBarang'])
+                ->whereNotNull('id_piutang')->where('gudang', 1);
+        }else{
+            $transaksi = Transaksi::with(['transaksi_detail', 'pembayaran', 'daftarPiutang', 'transaksi_detail.dataBarang'])
+                ->whereNotNull('id_piutang')->where('gudang', 2);
         }
 
-        if (!empty($request->start) && !empty($request->end)) {
+        if ($request->nama_pembeli != 'all') {
+            $transaksi->where('id_piutang', $request->nama_pembeli);
+        }
+
+        if (!empty($request->start_date) && !empty($request->end_date)) {
             $transaksi->whereBetween('created_at', [$start_date, $end_date]);
         }
         
         $data = $transaksi->orderBy('id_piutang', 'asc')->get();
 
-        return response()->json($data);
+        if (!empty($request->print)) {
+            $pdf = PDF::loadView('print.laporan-hutang', 
+                ['data'=>$data, 'start_date'=>$start_date, 
+                'end_date'=>$end_date, 
+                'start'=>$request->start_date
+            ])->setPaper('a4', 'landscape');
+            return $pdf->stream();
+        }else {
+            return response()->json($data);
+        }
     }
 
     public function labaRugi()
@@ -130,18 +196,38 @@ class ControllerLaporan extends Controller
         $start_date = Carbon::parse($request->start)->startOfDay();
         $end_date = Carbon::parse($request->end)->endOfDay();
 
-        $transaksi = Transaksi::with(['transaksi_detail', 'pembayaran', 'daftarPiutang', 'transaksi_detail.dataBarang'])
-            ->whereHas('pembayaran', function($query){
-                $query->where('pembayaran.metode_pembayaran', '!=', '3');
-            });
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $transaksi = Transaksi::with(['transaksi_detail', 'pembayaran', 'daftarPiutang', 'transaksi_detail.dataBarang'])
+                ->join('pembayaran', function($query){
+                    $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+                    $query->where('pembayaran.metode_pembayaran', '!=', '3');
+                })->where('transaksi.gudang', 1)
+                ->select('transaksi.*');
+        }else {
+            $transaksi = Transaksi::with(['transaksi_detail', 'pembayaran', 'daftarPiutang', 'transaksi_detail.dataBarang'])
+                ->join('pembayaran', function($query){
+                    $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+                    $query->where('pembayaran.metode_pembayaran', '!=', '3');
+                })->where('transaksi.gudang', 2)
+                ->select('transaksi.*');
+        }
 
-        if (!empty($request->start) && !empty($request->end)) {
-            $transaksi->whereBetween('created_at', [$start_date, $end_date]);
+        if (!empty($request->start_date) && !empty($request->end_date)) {
+            $transaksi->whereBetween('transaksi.created_at', [$start_date, $end_date]);
         }
         
         $data = $transaksi->get();
 
-        return response()->json($data);
+        if (!empty($request->print)) {
+            $pdf = PDF::loadView('print.laporan-laba-rugi', 
+                ['data'=>$data, 'start_date'=>$start_date, 
+                'end_date'=>$end_date, 
+                'start'=>$request->start_date
+            ])->setPaper('a4', 'landscape');
+            return $pdf->stream();
+        }else {
+            return response()->json($data);
+        }
     }
 
     public function dataBarang()
@@ -152,25 +238,53 @@ class ControllerLaporan extends Controller
 
     public function getDataDataBarang(Request $request)
     {
-        $start_date = Carbon::parse($request->start)->startOfDay();
-        $end_date = Carbon::parse($request->end)->endOfDay();
+        $start_date = Carbon::parse($request->start_date)->startOfDay();
+        $end_date = Carbon::parse($request->end_date)->endOfDay();
 
-        if ($request->nama != '' || isset($request->start)) {
-            $transaksi = Transaksi::join('transaksi_detail', function($query1) use($start_date, $end_date){
+        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+            $transaksi = Transaksi::join('transaksi_detail', function($query1) use($start_date, $end_date, $request){
                 $query1->on('transaksi.id', '=', 'transaksi_detail.id_transaksi');
-                $query1->whereBetween('transaksi_detail.created_at', [$start_date, $end_date]);
+                if (!empty($request->start_date) && !empty($request->end_date)) {
+                    $query1->whereBetween('transaksi_detail.created_at', [$start_date, $end_date]);
+                }
                 })
-                ->join('data_barang', function($query) use($request){
-                    $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
-                    $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama."%"]);
-                })->select('transaksi.*')->DISTINCT('id');
+                ->where('transaksi.gudang', 1)->select('transaksi.*')->DISTINCT('id');
 
             $transaksi_detail = TransaksiDetail::
-                join('data_barang', function($query) use($request){
-                    $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
-                    $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama."%"]);
+                crossJoin('transaksi', function($query){
+                    $query->on('transaksi.id', '=', 'transaksi_detail.id_transaksi');
+                    $query->where('transaksi.gudang', 1);
+                });
+        }else{
+            $transaksi = Transaksi::join('transaksi_detail', function($query1) use($start_date, $end_date){
+                $query1->on('transaksi.id', '=', 'transaksi_detail.id_transaksi');
+                if (!empty($request->start_date) && !empty($request->end_date)) {
+                    $query1->whereBetween('transaksi_detail.created_at', [$start_date, $end_date]);
+                }
                 })
-                ->whereBetween('transaksi_detail.created_at', [$start_date, $end_date]);
+                ->where('transaksi.gudang', 2)->select('transaksi.*')->DISTINCT('id');
+
+            $transaksi_detail = TransaksiDetail::
+                crossJoin('transaksi', function($query){
+                    $query->on('transaksi.id', '=', 'transaksi_detail.id_transaksi');
+                    $query->where('transaksi.gudang', 2);
+                });
+        }
+
+        if ($request->nama_barang != '' || $request->nama_barang == '') {
+            $transaksi->join('data_barang', function($query) use($request){
+                $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
+                $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama_barang."%"]);
+            });
+
+            $transaksi_detail->join('data_barang', function($query) use($request){
+                $query->on('transaksi_detail.id_data_barang', '=', 'data_barang.id');
+                $query->whereRaw('data_barang.nama_barang like ?', ["%".$request->nama_barang."%"]);
+            });
+        }
+
+        if (!empty($request->start_date) && !empty($request->start_date)) {
+            $transaksi_detail->whereBetween('transaksi_detail.created_at', [$start_date, $end_date]);
         }
         
         $data1 = $transaksi->with(['transaksi_detail.dataBarang', 'daftarPiutang'])->orderBy('id')->get();
@@ -186,6 +300,15 @@ class ControllerLaporan extends Controller
             'total_item' => $data3, 
         ];
 
-        return response()->json($data);
+        if (!empty($request->print)) {
+            $pdf = PDF::loadView('print.laporan-data-barang', 
+                ['data'=>$data, 'start_date'=>$start_date, 
+                'end_date'=>$end_date, 
+                'start'=>$request->start_date
+            ])->setPaper('a4');
+            return $pdf->stream();
+        }else {
+            return response()->json($data);
+        }
     }
 }

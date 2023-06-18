@@ -1,30 +1,32 @@
 @extends('template.main')
 @section('title')
-    LAPORAN LABA RUGI
+    LAPORAN KEUNTUNGAN BERSIH
 @endsection
 @section('jenis_tampilan')
-    / LAPORAN LABA RUGI
+    / LAPORAN KEUNTUNGAN BERSIH
 @endsection
 @section('content')
       <div class="content">
-        <form action="javascript:void(0)">
+        <form action="{{url('/laporan/laporan-laba-rugi/get-data')}}">
           <div class="row">
             <div class="col-md-6">
+              <input type="text" name="print" hidden value="print">
               <div class="form-group">
                 <label>Masukkan tanggal</label>
                 <div class="row">
                   <div class="col-md-6">
-                    <input class="form-control" type="date" name="start_date" id="start" required>
+                    <input class="form-control" type="date" name="start_date" id="start">
                   </div>
                   <div class="col-md-6">
-                    <input class="form-control" type="date" name="end_date" id="end" required>
+                    <input class="form-control" type="date" name="end_date" id="end">
                   </div>
                 </div>
               </div>
             </div>   
           </div>
-          <button class="btn btn-primary" style="width: 100%" id="btn_cari">CARI</button>
+          <button type="submit" class="btn btn-success" formtarget="_blank" style="width: 100%" id="btn_cetak" hidden>CETAK</button>
         </form>
+        <button class="btn btn-primary" style="width: 100%" id="btn_cari">CARI</button>
         <div class="row">
           <table class="table table-bordered" id="tabel_laba_rugi" style="font-size: 15px">
             <thead>
@@ -72,21 +74,21 @@
 
     $('#btn_cari').click(function(){
       $('#tabel_laba_rugi_list').empty();
+      $('#btn_cetak').removeAttr('hidden');
       let start = $('#start').val();
       let end = $('#end').val();
       let url = "{{url('/laporan/laporan-laba-rugi/get-data')}}";
-      if (start != '' && end != '' ) {
-        pencarian(start, end, url);
-      }
+
+      pencarian(start, end, url);
     })
     
-    function pencarian(start, end, url) {
+    function pencarian(start_date, end_date, url) {
       $.ajax({
         url: url,
         type: "GET",
         data: {
-            start,
-            end
+          start_date,
+          end_date
         },
         success: function(data){
           console.log(data);
