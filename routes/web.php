@@ -17,9 +17,10 @@ Route::post('loginaksi', 'ControllerLogin@loginaksi')->name('loginaksi');
 Route::get('logoutaksi', 'ControllerLogin@logoutaksi')->name('logoutaksi');
 
 Route::group(['middleware' =>  ['auth', 'admin:admin 1,kasir 1,admin 2,kasir 2']], function () {
-    Route::get('/', function () {
-        return view('welcome');
-    });
+    // Route::get('/', function () {
+    //     return view('welcome');
+    // });
+    Route::get('/', 'ControllerDashboard@index');
     //transaksi
     Route::get('/transaksi', 'ControllerTransaksi@index');
     Route::get('/transaksi/shopping-chart', 'ControllerTransaksi@shoppingChart');

@@ -32,7 +32,7 @@
           @if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'admin 2')
             <li>
               <a href="#" role="button" data-toggle="dropdown" aria-expanded="false">
-                <i class="fa fa-money"></i>
+                <i class="nc-icon nc-money-coins"></i>
                 <p>DATA PIUTANG</p>
               </a>
               <div class="dropdown-menu">
@@ -43,32 +43,32 @@
           @endif
           <li>
             <a href="{{ url('/pendapatan-lain') }}">
-              <i class="fa fa-money"></i>
+              <i class="nc-icon nc-money-coins"></i>
               <p>Pendapatan Lain - Lain</p>
             </a>
           </li>
           <li>
             <a href="{{ url('/pengeluaran-lain') }}">
-              <i class="fa fa-money"></i>
+              <i class="nc-icon nc-money-coins"></i>
               <p>Pengeluaran Lain - Lain</p>
             </a>
           </li>
           <li>
             <a href="{{ url('/laporan') }}">
-              <i class="fa fa-file"></i>
+              <i class="nc-icon nc-single-copy-04"></i>
               <p>LAPORAN</p>
             </a>
           </li>
           @if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'admin 2')
           <li>
             <a href="{{ url('/data-karyawan') }}">
-              <i class="fa fa-users"></i>
+              <i class="nc-icon nc-single-02"></i>
               <p>Data Karyawan</p>
             </a>
           </li>
             <li>
               <a href="{{ url('/pengaturan-akun') }}">
-                <i class="fa fa-users"></i>
+                <i class="nc-icon nc-single-02"></i>
                 <p>Pengaturan Akun</p>
               </a>
             </li>

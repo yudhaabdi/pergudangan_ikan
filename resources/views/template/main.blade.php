@@ -29,7 +29,7 @@
 
 <body class="">
   <div class="wrapper ">
-    <div class="sidebar" data-color="white" data-active-color="danger">
+    <div class="sidebar" data-color="red">
       <div class="logo">
         <a href="{{ url('/') }}" class="simple-text logo-mini">
           <div class="logo-image-small">
