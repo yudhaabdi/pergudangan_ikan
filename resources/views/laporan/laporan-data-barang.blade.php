@@ -9,7 +9,7 @@
     <div class="content">
         <form action="{{url('/laporan/laporan-data-barang/get-data')}}">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <input type="text" name="print" hidden value="print">
                   <div class="form-group">
                     <label>Masukkan Nama Barang</label>
@@ -17,7 +17,7 @@
                     <small style="color: red" hidden id="validasi">! masukkan nama barang !</small>
                   </div>
                 </div> 
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <div class="form-group">
                     <label>Masukkan tanggal</label>
                     <div class="row">
@@ -30,6 +30,23 @@
                     </div>
                   </div>
                 </div>
+                <div class="col-md-4">
+                  <div class="form-group">
+                    <label>Gudang</label>
+                    <select class="form-control select2" name="gudang" id="gudang" @if(Auth::User()->role != 'admin') disabled @endif>
+                      @if (Auth::User()->role == 'admin')
+                        <option value="1">Gudang 1</option>
+                        <option value="2">Gudang 2</option>
+                      @else
+                          @if (Auth::User()->role == 'kasir 1')
+                            <option value="1" selected>Gudang 1</option>
+                          @else
+                            <option value="2" selected>Gudang 2</option>
+                          @endif
+                      @endif
+                    </select>
+                  </div>
+                </div>   
             </div>
             <button type="submit" class="btn btn-success" formtarget="_blank" style="width: 100%" id="btn_cetak" hidden>CETAK</button>
         </form>
@@ -56,6 +73,7 @@
             <thead>
               <tr>
                 <th>Nama Barang</th>
+                <th>Size</th>
                 <th>Kode</th>
                 <th>Total Barang</th>
               </tr>
@@ -97,8 +115,9 @@
       nama_barang = $('#nama_barang').val();
       start_date = $('#start').val();
       end_date = $('#end').val();
+      gudang = $('#gudang').val();
       let url = "{{url('/laporan/laporan-data-barang/get-data')}}";
-      pencarian(nama, start, end, url);
+      pencarian(nama, start, end, url, gudang);
     })
 
     function pencarian(nama, start, end, url){
@@ -108,7 +127,8 @@
             data: {
               nama_barang,
               start_date,
-              end_date
+              end_date,
+              gudang
             },
             success: function(data){
                 var html = '<tr>';
@@ -171,6 +191,7 @@
                 var html2 = '<tr>';
                 for (let x = 0; x < data.total_item.length; x++) {
                   html2 += '<td>'+data.total_item[x].data_barang.nama_barang+'</td>';
+                  html2 += '<td>'+data.total_item[x].data_barang.size+'</td>';
                   if (data.total_item[x].data_barang.kode != null) {
                     html2 += '<td>'+data.total_item[x].data_barang.kode+'</td>';
                   }else{html2 += '<td>-</td>'}

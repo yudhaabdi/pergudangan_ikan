@@ -9,7 +9,7 @@
     <div class="content">
       <form action="{{url('/laporan/laporan-pengeluaran/get-data')}}">
         <div class="row">
-          <div class="col-md-6">
+          <div class="col-md-4">
             <input type="text" name="print" hidden value="print">
             <div class="form-group">
               <label>Masukkan Nama</label>
@@ -23,7 +23,7 @@
               </select>
             </div>
           </div> 
-          <div class="col-md-6">
+          <div class="col-md-4">
             <div class="form-group">
               <label>Masukkan tanggal</label>
               <div class="row">
@@ -34,6 +34,23 @@
                   <input class="form-control" type="date" name="end_date" id="end">
                 </div>
               </div>
+            </div>
+          </div> 
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Gudang</label>
+              <select class="form-control select2" name="gudang" id="gudang" @if(Auth::User()->role != 'admin') disabled @endif>
+                @if (Auth::User()->role == 'admin')
+                  <option value="1">Gudang 1</option>
+                  <option value="2">Gudang 2</option>
+                @else
+                    @if (Auth::User()->role == 'kasir 1')
+                      <option value="1" selected>Gudang 1</option>
+                    @else
+                      <option value="2" selected>Gudang 2</option>
+                    @endif
+                @endif
+              </select>
             </div>
           </div>   
         </div>
@@ -88,6 +105,7 @@
       nama_pembeli = $('#nama_pembeli').val();
       start_date = $('#start').val();
       end_date = $('#end').val();
+      gudang = $('#gudang').val();
 
       let url = "{{url('/laporan/laporan-pengeluaran/get-data')}}";
       $.ajax({
@@ -96,7 +114,8 @@
         data: {
           nama_pembeli,
           start_date,
-          end_date
+          end_date,
+          gudang
         },
         success: function(data){
 

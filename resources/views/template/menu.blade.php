@@ -17,19 +17,47 @@
               <p>TRANSAKSI</p>
             </a>
           </li>
-          <li>
+          @if (Auth::User()->role == 'admin')
+            <li>
+              <a href="#" role="button" data-toggle="dropdown" aria-expanded="false">
+                <i class="nc-icon nc-basket"></i>
+                <p>DATA BARANG</p>
+              </a>
+              <div class="dropdown-menu">
+                <a class="dropdown-item" href="{{ url('/data-barang/1') }}">Gudang 1</a>
+                <a class="dropdown-item" href="{{ url('/data-barang/2') }}">Gudang 2</a>
+              </div>
+            </li>
+          @else
+            @if (Auth::User()->role == 'kasir 1')
+              <li>
+                <a href="{{ url('/data-barang/1') }}">
+                  <i class="nc-icon nc-basket"></i>
+                  <p>DATA BARANG</p>
+                </a>
+              </li>
+            @else
+              <li>
+                <a href="{{ url('/data-barang/2') }}">
+                  <i class="nc-icon nc-basket"></i>
+                  <p>DATA BARANG</p>
+                </a>
+              </li>
+            @endif
+          @endif
+          {{-- <li>
             <a href="{{ url('/data-barang') }}">
               <i class="nc-icon nc-basket"></i>
               <p>DATA BARANG</p>
             </a>
-          </li>
+          </li> --}}
           <li>
             <a href="{{ url('/transaksi-detail') }}">
               <i class="nc-icon nc-cart-simple"></i>
               <p>TRANSAKSI DETAIL</p>
             </a>
           </li>
-          @if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'admin 2')
+          @if (Auth::User()->role == 'admin')
             <li>
               <a href="#" role="button" data-toggle="dropdown" aria-expanded="false">
                 <i class="nc-icon nc-money-coins"></i>
@@ -59,7 +87,7 @@
               <p>LAPORAN</p>
             </a>
           </li>
-          @if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'admin 2')
+          @if (Auth::User()->role == 'admin')
           <li>
             <a href="{{ url('/data-karyawan') }}">
               <i class="nc-icon nc-single-02"></i>

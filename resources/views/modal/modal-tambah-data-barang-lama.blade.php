@@ -9,7 +9,11 @@
           </button>
         </div>
         <div class="modal-body">
-            <form action="{{ url('data-barang/tambah-barang-lama') }}" method="POST" autocomplete="off" class="form-horizontal" id="formModalTambahBarangLama">
+          @php
+              $url = URL::full();
+              $gudang = substr($url, -1);
+          @endphp
+            <form action="{{ url('data-barang/'.$gudang.'/tambah-barang-lama') }}" method="POST" autocomplete="off" class="form-horizontal" id="formModalTambahBarangLama">
                 {{ csrf_field() }}
                 <div class="form-group">
                   <label>Nama Barang</label>

@@ -13,7 +13,7 @@ class ControllerHutang extends Controller
 {
     public function index()
     {
-        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
+        if (Auth::User()->role == 'admin') {
             $piutang = DaftarPiutang::with(['transaksi'])->where('total_hutang', '>', 0)->where('gudang', 1)->get();
         }else{
             $piutang = DaftarPiutang::with(['transaksi'])->where('total_hutang', '>', 0)->where('gudang', 2)->get();

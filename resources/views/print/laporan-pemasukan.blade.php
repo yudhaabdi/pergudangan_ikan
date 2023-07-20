@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>Document</title>
+    <title>LAPORAN PENDAPATAN</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
 <body>
@@ -62,12 +62,12 @@
                         @foreach ($item->transaksi->transaksi_detail as $key => $transaksi)
                             <td>&#8226 {{$transaksi->dataBarang->nama_barang}} <br></td>
                             <td>&#8226 {{$transaksi->jumlah_barang}} <br></td>
-                            <td>&#8226 {{$transaksi->harga_barang}} <br></td>
+                            <td>&#8226 {{number_format($transaksi->harga_barang)}} <br></td>
                         @endforeach
                     @else
                         <td>{{$item->keterangan}}</td>
                         <td>-</td>
-                        <td>{{format_number($item->transaksi->total_transaksi)}}</td>
+                        <td>{{number_format($item->transaksi->total_transaksi)}}</td>
                     @endif
                     <td>{{number_format($item->transaksi->total_transaksi)}}</td>
                     <td>{{number_format($item->jumlah_uang)}}</td>

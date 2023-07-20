@@ -1,6 +1,6 @@
 @extends('template.main')
 @section('title')
-    ERKA
+  BERKAH RESTU IBU
 @endsection
  @section('content')
      <div class="content">

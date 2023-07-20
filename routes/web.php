@@ -16,7 +16,7 @@ route::get('/login', 'ControllerLogin@login')->name('login');
 Route::post('loginaksi', 'ControllerLogin@loginaksi')->name('loginaksi');
 Route::get('logoutaksi', 'ControllerLogin@logoutaksi')->name('logoutaksi');
 
-Route::group(['middleware' =>  ['auth', 'admin:admin 1,kasir 1,admin 2,kasir 2']], function () {
+Route::group(['middleware' =>  ['auth', 'admin:admin,kasir 1,kasir 2']], function () {
     // Route::get('/', function () {
     //     return view('welcome');
     // });
@@ -38,13 +38,13 @@ Route::group(['middleware' =>  ['auth', 'admin:admin 1,kasir 1,admin 2,kasir 2']
     Route::get('/transaksi-detail/print/{id}', 'ControllerTransaksiDetail@print');
 
     //data barang
-    Route::get('/data-barang', 'ControllerDataBarang@index');
-    Route::post('/data-barang/tambah', 'ControllerDataBarang@tambah');
-    Route::post('/data-barang/tambah-barang-lama', 'ControllerDataBarang@tambahBarangLama');
-    Route::get('/data-barang/edit/{id}', 'ControllerDataBarang@edit');
-    Route::post('/data-barang/edit/{id}', 'ControllerDataBarang@dataEdit');
-    Route::get('/data-barang/hapus/{id}', 'ControllerDataBarang@hapus');
-    Route::get('/data-barang/penyusutan/{id}', 'ControllerDataBarang@penyusutan');
+    Route::get('/data-barang/{gudang}', 'ControllerDataBarang@index');
+    Route::post('/data-barang/{gudang}/tambah', 'ControllerDataBarang@tambah');
+    Route::post('/data-barang/{gudang}/tambah-barang-lama', 'ControllerDataBarang@tambahBarangLama');
+    Route::get('/data-barang/{gudang}/edit/{id}', 'ControllerDataBarang@edit');
+    Route::post('/data-barang/{gudang}/edit/{id}', 'ControllerDataBarang@dataEdit');
+    Route::get('/data-barang/{gudang}/hapus/{id}', 'ControllerDataBarang@hapus');
+    Route::get('/data-barang/{gudang}/penyusutan/{id}', 'ControllerDataBarang@penyusutan');
 
     //hutang
     route::get('/hutang', 'ControllerHutang@index');
