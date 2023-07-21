@@ -38,6 +38,7 @@ class ControllerLogin extends Controller
     public function logoutaksi()
     {
         Auth::logout();
+        session()->forget('gudang');
         return redirect('/login');
     }
 }

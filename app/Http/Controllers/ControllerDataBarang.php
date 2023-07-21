@@ -12,14 +12,14 @@ use Illuminate\Http\Request;
 
 class ControllerDataBarang extends Controller
 {
-    public function index($gudang){
+    public function index(){
 
-        $data_barang = DataBarang::where('stok_barang', '>', 0)->where('hapus', 0)->where('gudang', $gudang)->get();
+        $data_barang = DataBarang::where('stok_barang', '>', 0)->where('hapus', 0)->where('gudang', session('gudang'))->get();
       
         return view('data-barang', ['data_barang' => $data_barang]);
     }
 
-    public function tambah($gudang, Request $request)
+    public function tambah(Request $request)
     {
         try {
             $data_barang = new DataBarang;
@@ -31,11 +31,7 @@ class ControllerDataBarang extends Controller
             $data_barang->no_kontener = $request->no_kontener;
             $data_barang->harga_barang = $request->harga_barang;
             $data_barang->hapus = 0;
-            // if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            //     $data_barang->gudang = 1;
-            // }else {
-                $data_barang->gudang = $gudang;
-            // }
+            $data_barang->gudang = session('gudang');
             $data_barang->save();
 
             $total_transaksi = $request->jumlah_barang * $request->harga_barang;
@@ -53,11 +49,7 @@ class ControllerDataBarang extends Controller
             $hutang->nama_pemilik = $request->pemilik_barang;
             $hutang->id_barang = $data_barang->id;
             $hutang->hutang = $total_transaksi - $request->jumlah_uang;
-            // if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-                $hutang->gudang = $gudang;
-            // }else {
-                // $hutang->gudang = 2;
-            // }
+            $hutang->gudang = session('gudang');
             $hutang->save();
 
             $transaksi = new Transaksi;
@@ -67,11 +59,7 @@ class ControllerDataBarang extends Controller
             $transaksi->kekurangan = $total_transaksi - $request->jumlah_uang;
             $transaksi->tunggakan = 1;
             $transaksi->qty = $request->jumlah_barang;
-            // if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-                $transaksi->gudang = $gudang;
-            // }else{
-                // $transaksi->gudang = 2;
-            // }
+            $transaksi->gudang = session('gudang');
             $transaksi->save();
             
         } catch (\Exception $e) {
@@ -79,10 +67,10 @@ class ControllerDataBarang extends Controller
             return $e->getMessage();
         }
         
-        return redirect('/data-barang/'.$gudang);
+        return redirect('/data-barang');
     }
 
-    public function edit($gudang, $id)
+    public function edit($id)
     {
         $data_barang = DataBarang::find($id);
         if ($data_barang->lama == 1) {
@@ -102,7 +90,7 @@ class ControllerDataBarang extends Controller
         return response()->json(['data_barang' => $transaksi]);
     }
 
-    public function dataEdit($gudang, $id, Request $request)
+    public function dataEdit($id, Request $request)
     {
         try {
             $data_barang = DataBarang::find($id);
@@ -145,10 +133,10 @@ class ControllerDataBarang extends Controller
             return $e->getMessage();
         }
 
-        return redirect('/data-barang/'.$gudang);
+        return redirect('/data-barang');
     }
 
-    public function hapus($gudang, $id)
+    public function hapus($id)
     {
         try {
 
@@ -176,7 +164,7 @@ class ControllerDataBarang extends Controller
         ]); 
     }
 
-    public function tambahBarangLama($gudang, Request $request)
+    public function tambahBarangLama(Request $request)
     {
         try {
             $data_barang = new DataBarang;
@@ -189,20 +177,16 @@ class ControllerDataBarang extends Controller
             $data_barang -> no_kontener = $request->no_kontener;
             $data_barang -> hapus = 0;
             $data_barang -> lama = 1;
-            // if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-                $data_barang->gudang = $gudang;
-            // }else{
-                // $data_barang->gudang = 2;
-            // }
+            $data_barang->gudang = session('gudang');
             $data_barang->save();
         } catch (\Exception $e) {
             return $e->getMessage();
         }
 
-        return redirect('/data-barang/'.$gudang);
+        return redirect('/data-barang');
     }
 
-    public function penyusutan($gudang, $id)
+    public function penyusutan($id)
     {
         $data_barang = DataBarang::find($id);
 
@@ -219,11 +203,7 @@ class ControllerDataBarang extends Controller
         $transaksi->id_pembayaran = $pembayaran->id;
         $transaksi->total_transaksi = $total_uang;
         $transaksi->penyusutan = 1;
-        // if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            $transaksi->gudang = $gudang;
-        // }else{
-            // $transaksi->gudang = 2;
-        // }
+        $transaksi->gudang = session('gudang');
         $transaksi->save();
 
         $data_barang->stok_barang = 0;

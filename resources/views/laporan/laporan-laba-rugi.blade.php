@@ -22,24 +22,7 @@
                   </div>
                 </div>
               </div>
-            </div>  
-            <div class="col-md-4">
-              <div class="form-group">
-                <label>Gudang</label>
-                <select class="form-control select2" name="gudang" id="gudang" @if(Auth::User()->role != 'admin') disabled @endif>
-                  @if (Auth::User()->role == 'admin')
-                    <option value="1">Gudang 1</option>
-                    <option value="2">Gudang 2</option>
-                  @else
-                      @if (Auth::User()->role == 'kasir 1')
-                        <option value="1" selected>Gudang 1</option>
-                      @else
-                        <option value="2" selected>Gudang 2</option>
-                      @endif
-                  @endif
-                </select>
-              </div>
-            </div>  
+            </div>    
           </div>
           <button type="submit" class="btn btn-success" formtarget="_blank" style="width: 100%" id="btn_cetak" hidden>CETAK</button>
         </form>

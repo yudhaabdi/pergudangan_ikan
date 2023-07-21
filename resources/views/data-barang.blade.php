@@ -49,9 +49,9 @@
                         <td>{{ $barang->stok_barang}} Kg</td>
                         <td>Rp. {{ number_format($barang -> harga_barang)}}</td>
                         <td style="width: 250px;">
-                            <button style="font-size: 10px;" type="button" class="btn btn-primary btn-edit" data-url="{{ url('/data-barang/'.$barang->gudang.'/edit/'.$barang->id) }}" data-toggle="modal" data-target="#edit_barang">UBAH</button>
-                            <button style="font-size: 10px;" href="javascript:void(0)" data-url="{{url('/data-barang/'.$barang->gudang.'/hapus/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-danger btn-delete">HAPUS</button>
-                            <button style="font-size: 10px;" href="javascript:void(0)" data-nama="{{$barang->nama_barang}}" data-url="{{url('/data-barang/'.$barang->gudang.'/penyusutan/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-warning btn-penyusutan">PENYUSUTAN</button>
+                            <button style="font-size: 10px;" type="button" class="btn btn-primary btn-edit" data-url="{{ url('/data-barang/edit/'.$barang->id) }}" data-toggle="modal" data-target="#edit_barang">UBAH</button>
+                            <button style="font-size: 10px;" href="javascript:void(0)" data-url="{{url('/data-barang/hapus/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-danger btn-delete">HAPUS</button>
+                            <button style="font-size: 10px;" href="javascript:void(0)" data-nama="{{$barang->nama_barang}}" data-url="{{url('/data-barang/penyusutan/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-warning btn-penyusutan">PENYUSUTAN</button>
                         </td>
                     </tr>
                 @endforeach

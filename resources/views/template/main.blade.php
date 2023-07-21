@@ -63,8 +63,14 @@
             <h1 class="navbar-brand">PERGUDANGAN IKAN
               @yield('jenis_tampilan')
           </div>
-          <a href="{{route('logoutaksi')}}" class="btn btn-light">Keluar</a>
         </div>
+        @if (Auth::User()->role == 'admin')
+          <select name="gudang" class="form-control" style="width: 100px; margin-right: 10px;" id="gudang" data-url="{{ url('/setting') }}">
+            <option value="1" @if (session('gudang') == 1) selected @endif>Gudang 1</option>
+            <option value="2" @if (session('gudang') == 2) selected @endif>Gudang 2</option>
+          </select>
+        @endif
+        <a href="{{route('logoutaksi')}}" class="btn btn-light">Keluar</a>
       </nav>
       <!-- End Navbar -->
       @yield('content')
@@ -110,6 +116,7 @@
   {{-- <script src="https://code.jquery.com/jquery-3.5.1.js"></script> --}}
   <script src="https://cdn.datatables.net/1.13.2/js/jquery.dataTables.min.js"></script>
   <script src="https://cdn.datatables.net/1.13.2/js/dataTables.bootstrap4.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   {{-- date range --}}
   {{-- <link href="assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/> --}}
 
@@ -131,6 +138,36 @@
                 tags: true
           });
        });
+
+    $('body').on('change', '#gudang',function(e){
+      let url =  $(this).data('url');
+      var gudang = $('#gudang').val();
+      console.log(gudang);
+
+      getSetting(url, gudang)
+    });
+
+    function getSetting(url, gudang){
+      $.ajax({
+        type: "GET",
+            url: url,
+            data: {
+              gudang
+            },
+            success: function(data){
+              Swal.fire({
+                  type: 'success',
+                  icon: 'success',
+                  title: `${data.message}`,
+                  showConfirmButton: false,
+                  timer: 3000
+              });
+              setTimeout(function() { 
+                window.location.reload(true);
+              }, 3000);
+            }
+      })
+    }
 </script>
 </body>
 

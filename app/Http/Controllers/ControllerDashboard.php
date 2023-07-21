@@ -12,6 +12,22 @@ use Auth;
 class ControllerDashboard extends Controller
 {
     public function index() {
+        if (session("gudang") == null) {
+            if (Auth::User()->role == 'kasir 1') {
+                $session_gudang = session("gudang");
+                $session_gudang = 1;
+                session(["gudang" => $session_gudang]);
+            }elseif(Auth::User()->role == 'kasir 2'){
+                $session_gudang = session("gudang");
+                $session_gudang = 2;
+                session(["gudang" => $session_gudang]);
+            }else{
+                $session_gudang = session("gudang");
+                $session_gudang = 1;
+                session(["gudang" => $session_gudang]);
+            }
+        }
+
         $start_date = Carbon::now()->startOfMonth();
         $end_date = Carbon::now()->endOfMonth();
 
@@ -34,6 +50,6 @@ class ControllerDashboard extends Controller
             }
            
         }
-        return view('welcome', compact('data_barang', 'transaksi', 'user'));
+        return view('welcome', compact('data_barang', 'transaksi', 'user', 'session_gudang'));
     }
 }

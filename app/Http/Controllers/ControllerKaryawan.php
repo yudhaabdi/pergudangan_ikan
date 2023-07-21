@@ -14,11 +14,7 @@ class ControllerKaryawan extends Controller
 {
     public function index()
     {
-        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            $karyawan = Karyawan::where('gudang', 1)->get();
-        }else {
-            $karyawan = Karyawan::where('gudang', 2)->get();
-        }
+        $karyawan = Karyawan::where('gudang', session('gudang'))->get();
         return view('karyawan.index', compact(['karyawan']));
     }
 
@@ -29,11 +25,8 @@ class ControllerKaryawan extends Controller
         $karyawan->alamat = $request->alamat;
         $karyawan->no_hp = $request->no_hp;
         $karyawan->gaji = $request->gaji;
-        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            $karyawan->gudang = 1;
-        }else {
-            $karyawan->gudang = 2;
-        }
+        $karyawan->gudang = session('gudang');
+        
         $karyawan->save();
 
         return redirect('/data-karyawan');
@@ -105,11 +98,8 @@ class ControllerKaryawan extends Controller
         $transaksi = new Transaksi;
         $transaksi->id_pembayaran = $pembayaran->id;
         $transaksi->total_transaksi = $total_pembayaran;
-        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            $transaksi->gudang = 1;
-        }else{
-            $transaksi->gudang = 2;
-        }
+        $transaksi->gudang = session('gudang');
+        
         $transaksi->save();
 
         $pembayaran_karyawan = PembayaranKaryawan::insert($data);
@@ -149,11 +139,8 @@ class ControllerKaryawan extends Controller
             $transaksi = new Transaksi;
             $transaksi->id_pembayaran = $pembayaran->id;
             $transaksi->total_transaksi = $karyawan->gaji;
-            if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-                $transaksi->gudang = 1;
-            }else{
-                $transaksi->gudang = 2;
-            }
+            $transaksi->gudang = session('gudang');
+            
             $transaksi->save();
     
             $tanggal = Carbon::now()->toDateString();

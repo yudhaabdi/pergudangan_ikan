@@ -15,11 +15,7 @@ class ControllerTransaksi extends Controller
 {
     function index(){
         $cart = session('cart');
-        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            $data_barang = DataBarang::where('stok_barang', '>', 0)->where('gudang', 1)->get();
-        }else{
-            $data_barang = DataBarang::where('stok_barang', '>', 0)->where('gudang', 2)->get();
-        }
+        $data_barang = DataBarang::where('stok_barang', '>', 0)->where('gudang', session('gudang'))->get();
         // session()->forget('cart');
         return view('transaksi', compact('cart', 'data_barang'));
     }
@@ -65,11 +61,7 @@ class ControllerTransaksi extends Controller
             $tambah_piutang = new DaftarPiutang;
             $tambah_piutang->nama_pembeli = $request->nama_pembeli;
             $tambah_piutang->total_hutang = $sisa;
-            if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-                $tambah_piutang->gudang = 1;
-            }else{
-                $tambah_piutang->gudang = 2;
-            }
+            $tambah_piutang->gudang = session('gudang');
             $tambah_piutang->save();
         }else{
             $tambah_piutang = DaftarPiutang::where('nama_pembeli', $request->nama_pembeli)->first();
@@ -93,16 +85,12 @@ class ControllerTransaksi extends Controller
         $transaksi->total_transaksi = $request->total_belanja;
         $transaksi->id_piutang = $tambah_piutang->id;
         $transaksi->id_pembayaran = $pembayaran->id;
+        $transaksi->gudang = session('gudang');
 
         if ($sisa > 0) {
             $transaksi->kekurangan = $sisa;
         }else{
             $transaksi->kekurangan = 0;
-        }
-        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            $transaksi->gudang = 1;
-        }else{
-            $transaksi->gudang = 2;
         }
         $transaksi->save();
 

@@ -23,49 +23,22 @@ class ControllerLaporan extends Controller
 
     public function pemasukan()
     {
-        if (Auth::User()->role == 'admin') {
-            $nama = DaftarPiutang::whereHas('pembayaran', function($query){
-                $query->where('pendapatan', 1);
-            })
-            ->get();
-        }else{
-            if (Auth::User()->role == 'kasir 1') {
-                $nama = DaftarPiutang::whereHas('pembayaran', function($query){
-                    $query->where('pendapatan', 1);
-                })->where('gudang', 1)
-                ->get();
-            } else {
-                $nama = DaftarPiutang::whereHas('pembayaran', function($query){
-                    $query->where('pendapatan', 1);
-                })->where('gudang', 2)
-                ->get();
-            }
-        }
+        $nama = DaftarPiutang::whereHas('pembayaran', function($query){
+            $query->where('pendapatan', 1);
+        })->where('gudang', session('gudang'))
+        ->get();
+        
         return view('laporan.laporan-pendapatan', compact(['nama']));
     }
 
     public function getData(Request $request)
     {
-        if (Auth::User()->role == 'admin') {
-            $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang'])
-            ->where('pembayaran.pendapatan', 1)
-            ->join('transaksi', function($query) use($request){
-                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
-                $query->where('transaksi.gudang', $request->gudang);
-            })->select('pembayaran.*');            
-        }else{
-            $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang'])
-            ->where('pembayaran.pendapatan', 1)
-            ->join('transaksi', function($query){
-                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
-                if (Auth::User()->role == 'kasir 1') {
-                    $query->where('transaksi.gudang', 1);
-                } else {
-                    $query->where('transaksi.gudang', 2);
-                }
-                
-            })->select('pembayaran.*');            
-        }
+        $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang'])
+        ->where('pembayaran.pendapatan', 1)
+        ->join('transaksi', function($query) use($request){
+            $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+            $query->where('transaksi.gudang', session('gudang'));
+        })->select('pembayaran.*');            
 
         $start_date = Carbon::parse($request->start_date)->startOfDay();
         $end_date = Carbon::parse($request->end_date)->endOfDay();
@@ -91,47 +64,22 @@ class ControllerLaporan extends Controller
 
     public function pengeluaran()
     {
-        if (Auth::User()->role == 'admin') {
-            $nama = DaftarPiutang::whereHas('pembayaran', function($query){
-                $query->where('pendapatan', 2);
-            })->get();
-        }else{
-            if (Auth::User()->role == 'kasir 1') {
-                $nama = DaftarPiutang::whereHas('pembayaran', function($query){
-                    $query->where('pendapatan', 2);
-                })->where('gudang', 1)
-                ->get();
-            } else {
-                $nama = DaftarPiutang::whereHas('pembayaran', function($query){
-                    $query->where('pendapatan', 2);
-                })->where('gudang', 2)
-                ->get();
-            }
-        }
+        $nama = DaftarPiutang::whereHas('pembayaran', function($query){
+            $query->where('pendapatan', 2);
+        })->where('gudang', session('gudang'))
+        ->get();
+        
         return view('laporan.laporan-pengeluaran', compact(['nama']));
     }
 
     public function getDataPengeluaran(Request $request)
     {
-        if (Auth::User()->role == 'admin') {
-            $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang', 'dataBarang'])
-            ->where('pembayaran.pendapatan', 2)
-            ->join('transaksi', function($query) use($request){
-                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
-                $query->where('transaksi.gudang', $request->gudang);
-            });            
-        }else{
-            $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang', 'dataBarang'])
-            ->where('pembayaran.pendapatan', 2)
-            ->join('transaksi', function($query){
-                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
-                if (Auth::User()->role == 'kasir 1') {
-                    $query->where('transaksi.gudang', 1);
-                } else {
-                    $query->where('transaksi.gudang', 2);
-                }
-            });            
-        }
+        $pembayaran = Pembayaran::with(['transaksi', 'daftarPiutang', 'transaksi.transaksi_detail', 'transaksi.transaksi_detail.dataBarang', 'dataBarang'])
+        ->where('pembayaran.pendapatan', 2)
+        ->join('transaksi', function($query) use($request){
+            $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+            $query->where('transaksi.gudang', session('gudang'));
+        });            
 
         $start_date = Carbon::parse($request->start_date)->startOfDay();
         $end_date = Carbon::parse($request->end_date)->endOfDay();
@@ -166,15 +114,8 @@ class ControllerLaporan extends Controller
 
     public function hutang()
     {
-        if (Auth::User()->role == 'admin') {
-            $nama = DaftarPiutang::all();
-        }else {
-            if (Auth::User()->role == 'kasir 1') {
-                $nama = DaftarPiutang::where('gudang', 1)->get();
-            } else {
-                $nama = DaftarPiutang::where('gudang', 2)->get();
-            }
-        }
+        $nama = DaftarPiutang::where('gudang', session('gudang'))->get();
+        
         return view('laporan.laporan-hutang', compact(['nama']));
 
     }
@@ -184,13 +125,8 @@ class ControllerLaporan extends Controller
         $start_date = Carbon::parse($request->start_date)->startOfDay();
         $end_date = Carbon::parse($request->end_date)->endOfDay();
 
-        if (Auth::User()->role == 'admin') {
-            $transaksi = Transaksi::with(['transaksi_detail', 'pembayaran', 'daftarPiutang', 'transaksi_detail.dataBarang'])
-                ->whereNotNull('id_piutang')->where('gudang', $request->gudang);
-        }else{
-            $transaksi = Transaksi::with(['transaksi_detail', 'pembayaran', 'daftarPiutang', 'transaksi_detail.dataBarang'])
-                ->whereNotNull('id_piutang')->where('gudang', $request->gudang);
-        }
+        $transaksi = Transaksi::with(['transaksi_detail', 'pembayaran', 'daftarPiutang', 'transaksi_detail.dataBarang'])
+            ->whereNotNull('id_piutang')->where('gudang', session('gudang'));
 
         if ($request->nama_pembeli != 'all') {
             $transaksi->where('id_piutang', $request->nama_pembeli);

@@ -9,7 +9,7 @@
     <div class="content">
       <form action="{{url('/laporan/laporan-hutang/get-data')}}">
         <div class="row">
-          <div class="col-md-4">
+          <div class="col-md-6">
             <input type="text" name="print" hidden value="print">
             <div class="form-group">
               <label>Masukkan Nama</label>
@@ -21,7 +21,7 @@
               </select>
             </div>
           </div> 
-          <div class="col-md-4">
+          <div class="col-md-6">
             <div class="form-group">
               <label>Masukkan tanggal</label>
               <div class="row">
@@ -33,24 +33,7 @@
                 </div>
               </div>
             </div>
-          </div> 
-          <div class="col-md-4">
-            <div class="form-group">
-              <label>Gudang</label>
-              <select class="form-control select2" name="gudang" id="gudang" @if(Auth::User()->role != 'admin') disabled @endif>
-                @if (Auth::User()->role == 'admin')
-                  <option value="1">Gudang 1</option>
-                  <option value="2">Gudang 2</option>
-                @else
-                    @if (Auth::User()->role == 'kasir 1')
-                      <option value="1" selected>Gudang 1</option>
-                    @else
-                      <option value="2" selected>Gudang 2</option>
-                    @endif
-                @endif
-              </select>
-            </div>
-          </div>    
+          </div>   
         </div>
         <button type="submit" class="btn btn-success" formtarget="_blank" style="width: 100%" id="btn_cetak" hidden>CETAK</button>
       </form>
@@ -186,7 +169,7 @@
             if (data[i].hutang == null) {
               total_hutang = hutang + total_hutang;
             } else {
-              total_hutang = total_hutang - data[i].total_transaksi;
+              total_hutang = data[i].hutang_sebelum - data[i].total_transaksi;
             }
             html += '<tr><td colspan="9" style="text-align: center;"><b>SISA HUTANG</b></td>';
             if (data[i].daftar_piutang.total_hutang == 0) {
