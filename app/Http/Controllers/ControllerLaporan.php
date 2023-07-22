@@ -136,7 +136,7 @@ class ControllerLaporan extends Controller
             $transaksi->whereBetween('created_at', [$start_date, $end_date]);
         }
         
-        $data = $transaksi->orderBy('id_piutang', 'asc')->get();
+        $data = $transaksi->orderBy('id_piutang', 'asc')->orderBy('created_at', 'asc')->get();
 
         if (!empty($request->print)) {
             $pdf = PDF::loadView('print.laporan-hutang', 

@@ -106,12 +106,21 @@
                         @endif
                     @endif
                 </tr>
+                @php
+                    $hutang = $item->kekurangan;
+                @endphp
+                @if ($item->hutang == null)
                     @php
-                        $total_hutang = $item->kekurangan;
+                        $total_hutang = $hutang + $total_hutang;
                     @endphp
+                @else
+                    @php
+                        $total_hutang = $item->hutang_sebelum - $item->total_transaksi;
+                    @endphp
+                @endif
                 <tr>
                     <td colspan="9" style="text-align: center;"><b>SISA HUTANG</b></td>
-                    @if ($total_hutang == 0)
+                    @if ($item->daftarPiutang->total_hutang == 0)
                         <td>LUNAS</td>
                     @else
                         <td>{{number_format($total_hutang)}}</td>
