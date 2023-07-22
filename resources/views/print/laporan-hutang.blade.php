@@ -48,6 +48,8 @@
                 <th>Total Harga</th>
                 <th>Total Faktur</th>
                 <th>Pembayaran</th>
+                <th>Metode Pembayaran</th>
+                <th>Nama Bank</th>
                 <th>Hutang</th>
             </tr>
         </thead>
@@ -65,7 +67,20 @@
                             <td colspan="5" style="text-align: center">{{$item->pembayaran->keterangan}}</td>
                             <td>{{number_format($item->pembayaran->jumlah_uang)}}</td>
                         @else
-                            <td colspan="6" style="text-align: center">{{$item->pembayaran->keterangan}}</td>
+                            <td colspan="5" style="text-align: center">{{$item->pembayaran->keterangan}}</td>
+                            <td>{{number_format($item->pembayaran->jumlah_uang)}}</td>
+                        @endif
+                        @if ($item->pembayaran->metode_pembayaran == 1)
+                            <td>Tunai</td>
+                        @elseif ($item->pembayaran->metode_pembayaran == 2)
+                            <td>{{$item->pembayaran->nama_bank}}</td>
+                        @elseif ($item->pembayaran->metode_pembayaran == 3)
+                            <td>Hutang</td>
+                        @endif
+                        @if ($item->pembayaran->nama_bank == null)
+                            <td>-</td>
+                        @else
+                            <td>{{$item->pembayaran->nama_bank}}</td>
                         @endif
                         <td>{{$item->kekurangan}}</td>
                     @else
@@ -91,7 +106,7 @@
                             @endforeach
                             </td>
                         @else
-                            <td colspan="6" style="text-align: center;color: blue;"><b>PEMBAYARAN HUTANG</b></td>
+                            <td colspan="5" style="text-align: center;color: blue;"><b>PEMBAYARAN HUTANG</b></td>
                         @endif
                         @if ($item->hutang == null)
                             <td>{{number_format($item->total_transaksi)}}</td>
@@ -101,17 +116,44 @@
                         @else
                             <td>{{number_format($item->pembayaran->jumlah_uang)}}</td>  
                         @endif
+                        @if ($item->pembayaran->metode_pembayaran == 1)
+                            <td>Tunai</td>
+                        @endif
+                        @if ($item->pembayaran->metode_pembayaran == 2)
+                            <td>{{$item->pembayaran->nama_bank}}</td>
+                        @endif
+                        @if ($item->pembayaran->metode_pembayaran == 3)
+                            <td>Hutang</td>
+                        @endif
+                        @if ($item->pembayaran->nama_bank == null)
+                            <td>-</td>
+                        @else
+                            <td>{{$item->pembayaran->nama_bank}}</td>
+                        @endif
                         @if ($item->hutang == null)
-                            <td>{{number_format($item->kekurangan)}}</td>
+                        <td>{{number_format($item->kekurangan)}}</td>
+                        @else
+                        {{-- {{dd($item)}} --}}
+                         <td>{{number_format($item->kekurangan)}}</td>
                         @endif
                     @endif
                 </tr>
+                @php
+                    $hutang = 
+                    $hutang = $item->kekurangan;
+                @endphp
+                @if ($item->hutang == null)
                     @php
-                        $total_hutang = $item->kekurangan;
+                        $total_hutang = $hutang + $total_hutang;
                     @endphp
+                @else
+                    @php
+                        $total_hutang = $item->hutang_sebelum - $item->total_transaksi;
+                    @endphp
+                @endif
                 <tr>
-                    <td colspan="9" style="text-align: center;"><b>SISA HUTANG</b></td>
-                    @if ($total_hutang == 0)
+                    <td colspan="11" style="text-align: center;"><b>SISA HUTANG</b></td>
+                    @if ($item->daftarPiutang->total_hutang == 0)
                         <td>LUNAS</td>
                     @else
                         <td>{{number_format($total_hutang)}}</td>

@@ -38,13 +38,13 @@ Route::group(['middleware' =>  ['auth', 'admin:admin,kasir 1,kasir 2']], functio
     Route::get('/transaksi-detail/print/{id}', 'ControllerTransaksiDetail@print');
 
     //data barang
-    Route::get('/data-barang/{gudang}', 'ControllerDataBarang@index');
-    Route::post('/data-barang/{gudang}/tambah', 'ControllerDataBarang@tambah');
-    Route::post('/data-barang/{gudang}/tambah-barang-lama', 'ControllerDataBarang@tambahBarangLama');
-    Route::get('/data-barang/{gudang}/edit/{id}', 'ControllerDataBarang@edit');
-    Route::post('/data-barang/{gudang}/edit/{id}', 'ControllerDataBarang@dataEdit');
-    Route::get('/data-barang/{gudang}/hapus/{id}', 'ControllerDataBarang@hapus');
-    Route::get('/data-barang/{gudang}/penyusutan/{id}', 'ControllerDataBarang@penyusutan');
+    Route::get('/data-barang', 'ControllerDataBarang@index');
+    Route::post('/data-barang/tambah', 'ControllerDataBarang@tambah');
+    Route::post('/data-barang/tambah-barang-lama', 'ControllerDataBarang@tambahBarangLama');
+    Route::get('/data-barang/edit/{id}', 'ControllerDataBarang@edit');
+    Route::post('/data-barang/edit/{id}', 'ControllerDataBarang@dataEdit');
+    Route::get('/data-barang/hapus/{id}', 'ControllerDataBarang@hapus');
+    Route::get('/data-barang/penyusutan/{id}', 'ControllerDataBarang@penyusutan');
 
     //hutang
     route::get('/hutang', 'ControllerHutang@index');

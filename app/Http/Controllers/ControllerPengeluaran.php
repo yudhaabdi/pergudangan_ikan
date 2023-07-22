@@ -12,21 +12,12 @@ class ControllerPengeluaran extends Controller
 {
     public function index()
     {
-        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            $pembayaran = Pembayaran::with('transaksi', 'transaksi.daftarPiutang')->where('pembayaran.lain_lain', 2)
-            ->join('transaksi', function($query){
-                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
-                $query->where('transaksi.gudang', 1);
-            })->select('pembayaran.*')
-            ->get();
-        }else{
-            $pembayaran = Pembayaran::with('transaksi', 'transaksi.daftarPiutang')->where('pembayaran.lain_lain', 2)
-            ->join('transaksi', function($query){
-                $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
-                $query->where('transaksi.gudang', 2);
-            })->select('pembayaran.*')
-            ->get();
-        }
+        $pembayaran = Pembayaran::with('transaksi', 'transaksi.daftarPiutang')->where('pembayaran.lain_lain', 2)
+        ->join('transaksi', function($query){
+            $query->on('transaksi.id_pembayaran', '=', 'pembayaran.id');
+        })->select('pembayaran.*')
+        ->get();
+        
         return view('pengeluaran.index', compact(['pembayaran']));
     }
 
@@ -41,11 +32,6 @@ class ControllerPengeluaran extends Controller
                     $tambah_piutang = new DaftarPiutang;
                     $tambah_piutang->nama_pembeli = $request->nama_pembeli;
                     $tambah_piutang->total_hutang = $request->jumlah_uang;
-                    if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-                        $tambah_piutang->gudang = 1;
-                    }else{
-                        $tambah_piutang->gudang = 2;
-                    }
                     $tambah_piutang->save();
                     $total_hutang = $request->jumlah_uang;
                 }else{
@@ -79,11 +65,6 @@ class ControllerPengeluaran extends Controller
             $transaksi->kekurangan = $total_hutang;
             $transaksi->id_pembayaran = $pembayaran->id;
             $transaksi->total_transaksi = $request->jumlah_uang;
-            if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-                $transaksi->gudang = 1;
-            }else{
-                $transaksi->gudang = 2;
-            }
             $transaksi->save();
     
             return redirect('/pengeluaran-lain');   

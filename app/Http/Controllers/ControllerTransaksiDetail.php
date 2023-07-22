@@ -19,15 +19,9 @@ class ControllerTransaksiDetail extends Controller
     {
         $cart_return = session("cart_return");
 
-        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            $transaksi = Transaksi::with(['daftarPiutang', 'pembayaran'])->whereNotNull('id_piutang')->where('hutang', null)->whereHas('pembayaran', function($query){
-                $query->where('lain_lain', null);
-            })->where('gudang', 1)->get();
-        }else {
-            $transaksi = Transaksi::with(['daftarPiutang', 'pembayaran'])->whereNotNull('id_piutang')->where('hutang', null)->whereHas('pembayaran', function($query){
-                $query->where('lain_lain', null);
-            })->where('gudang', 2)->get();
-        }
+        $transaksi = Transaksi::with(['daftarPiutang', 'pembayaran'])->whereNotNull('id_piutang')->where('hutang', null)->whereHas('pembayaran', function($query){
+            $query->where('lain_lain', null);
+        })->get();
 
         session()->forget('cart_return');
         session()->forget('cart_delete');
@@ -60,11 +54,8 @@ class ControllerTransaksiDetail extends Controller
             }
         }
 
-        if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-            $data_barang = DataBarang::where('stok_barang', '>', 0)->where('gudang', 1)->get();
-        }else{
-            $data_barang = DataBarang::where('stok_barang', '>', 0)->where('gudang', 2)->get();
-        }
+        $data_barang = DataBarang::where('stok_barang', '>', 0)->get();
+        
         session(["cart_return" => $cart_return]);
         return view('transaksi.transaksi-detail-return', compact('cart_return', 'transaksi', 'data_barang'));
     }
@@ -117,11 +108,6 @@ class ControllerTransaksiDetail extends Controller
             $tambah_piutang = new DaftarPiutang;
             $tambah_piutang->nama_pembeli = $request->nama_pembeli;
             $tambah_piutang->total_hutang = $sisa;
-            if (Auth::User()->role == 'admin 1' || Auth::User()->role == 'kasir 1') {
-                $tambah_piutang->gudang = 1;
-            }else{
-                $tambah_piutang->gudang = 2;
-            }
             $tambah_piutang->save();
         }else{
             $tambah_piutang = DaftarPiutang::where('nama_pembeli', $request->nama_pembeli)->first();
