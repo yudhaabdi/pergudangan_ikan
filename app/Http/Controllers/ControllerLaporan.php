@@ -246,4 +246,88 @@ class ControllerLaporan extends Controller
             return response()->json($data);
         }
     }
+
+    public function stokBarang(){
+        $nama = DataBarang::select('id', 'nama_barang', 'kode', 'size', 'kemasan')->get();
+        return view('laporan.laporan-stok-barang', compact('nama'));
+    }
+
+    public function getDataStokBarang(Request $request){
+        $start_date = Carbon::parse($request->start_date)->startOfDay();
+        $end_date = Carbon::parse($request->end_date)->endOfDay();
+
+        $transaksi_pemasukan = Transaksi::join('pembayaran', 'pembayaran.id', '=', 'transaksi.id_pembayaran')
+            ->join('data_barang', 'data_barang.id', '=', 'pembayaran.id_data_barang')
+            ->join('hutang_perusahaan', 'transaksi.id_hutang_perusahaan', '=', 'hutang_perusahaan.id')
+            ->with(['transaksi_detail.dataBarang', 'daftarPiutang', 'pembayaran.dataBarang', 'hutangPerusahaan'])->orderBy('id');
+        
+        $transaksi_pengeluaran = TransaksiDetail::join('transaksi', 'transaksi.id', '=', 'transaksi_detail.id_transaksi')
+            ->join('daftar_piutang', 'transaksi.id_piutang', '=', 'daftar_piutang.id')
+            ->join('data_barang', 'data_barang.id', '=', 'transaksi_detail.id_data_barang')
+            ->with(['dataBarang', 'transaksi.daftarPiutang']);
+
+        if ($request->nama_barang != 'all') {
+            $transaksi_pemasukan = $transaksi_pemasukan->join('pembayaran as bayar', function($query) use($request){
+                $query->on('bayar.id', '=', 'transaksi.id_pembayaran');
+                $query->where('bayar.id_data_barang', $request->nama_barang);
+            });
+
+            $transaksi_pengeluaran = $transaksi_pengeluaran->join('transaksi as beli', function($query) use($request){
+                $query->on('beli.id', '=', 'transaksi_detail.id_transaksi');
+                $query->where('transaksi_detail.id_data_barang', $request->nama_barang);
+            });
+
+        }
+
+        if (!empty($request->start_date) && !empty($request->start_date)) {
+            $transaksi_pemasukan = $transaksi_pemasukan->whereBetween('transaksi.created_at', [$start_date, $end_date]);
+
+            $transaksi_pengeluaran = $transaksi_pengeluaran->join('transaksi as belis', function($query) use($start_date, $end_date){
+                $query->on('belis.id', '=', 'transaksi_detail.id_transaksi');
+                $query->whereBetween('belis.created_at', [$start_date, $end_date]);
+            });
+        }
+
+        $pemasukan = $transaksi_pemasukan->select(
+            'transaksi.id',
+            'hutang_perusahaan.nama_pemilik',
+            'data_barang.nama_barang', 
+            'data_barang.kode', 
+            'transaksi.total_transaksi',
+            'transaksi.kekurangan',
+            'data_barang.harga_barang as harga_beli',
+            'transaksi.created_at'
+             
+            )->get();
+        $pengeluaran = $transaksi_pengeluaran->select(
+            'transaksi_detail.id', 
+            'data_barang.nama_barang',
+            'data_barang.kode',
+            'transaksi_detail.jumlah_barang', 
+            'transaksi_detail.harga_barang as harga_jual',
+            'data_barang.harga_barang as harga_beli',
+            'daftar_piutang.nama_pembeli',
+            'transaksi.created_at'
+            )->get();
+
+        $collection = collect($pemasukan);
+        $merged     = $collection->merge($pengeluaran);
+        $result   = $merged->all();
+
+        $data = [
+            'transaksi' => $result,
+            'data_barang' => DataBarang::all()
+        ];
+
+        if (!empty($request->print)) {
+            $pdf = PDF::loadView('print.laporan-stok-barang', 
+                ['data'=>$data, 'start_date'=>$start_date, 
+                'end_date'=>$end_date, 
+                'start'=>$request->start_date
+            ])->setPaper('a4', 'landscape');
+            return $pdf->stream();
+        }else {
+            return response()->json($data);
+        }
+    }
 }

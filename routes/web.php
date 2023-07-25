@@ -78,6 +78,9 @@ Route::group(['middleware' =>  ['auth', 'admin:admin,kasir 1,kasir 2']], functio
     //laporan data barang
     route::get('laporan/laporan-data-barang', 'ControllerLaporan@dataBarang');
     route::get('laporan/laporan-data-barang/get-data', 'ControllerLaporan@getDataDataBarang');
+    //laporan stok barang
+    route::get('laporan/laporan-stok-barang', 'ControllerLaporan@stokBarang');
+    route::get('laporan/laporan-stok-barang/get-data', 'ControllerLaporan@getDataStokBarang');
 
     //data karyawan
     route::get('/data-karyawan', 'ControllerKaryawan@index');
