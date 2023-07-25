@@ -3,7 +3,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Edit Barang</h5>
+          <h5 class="modal-title" id="nama_modal">Edit Barang</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
@@ -11,19 +11,20 @@
         <div class="modal-body">
             <form action="" method="POST" autocomplete="off" class="form-horizontal" id="formModalEdit">
                 {{ csrf_field() }}
+                <input type="text" name="id_barang" id="id_barang" hidden>
                 <div class="form-group" id="pemilik">
                   <label>Pemilik Barang</label>
-                  <input type="text" class="form-control" placeholder="masukkan pemilik barang" name="pemilik_barang" id="pemilik_barang">
+                  <input type="text" required class="form-control" placeholder="masukkan pemilik barang" name="pemilik_barang" id="pemilik_barang">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="form_nama_barang">
                   <label>Nama Barang</label>
                   <input type="text" class="form-control" placeholder="masukkan nama barang" name="nama_barang" id="nama_barang">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="form_size">
                   <label>Size</label>
                   <input type="text" class="form-control" placeholder="masukkan size" name="size" id="size">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="form_kemasan">
                   <label>Kemasan (/Kg)</label>
                   <input type="text" class="form-control" placeholder="masukkan kemasan" name="kemasan" id="kemasan">
                 </div>
@@ -31,15 +32,15 @@
                   <label>Jumlah Barang (/Kg)</label>
                   <input type="text" class="form-control" placeholder="masukkan jumlah barang" name="jumlah_barang" id="jumlah_barang">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="form_harga_barang">
                   <label>Harga Barang</label>
                   <input type="text" class="form-control" placeholder="masukkan harga barang" name="harga_barang" id="harga_barang">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="form_kode_barang">
                   <label>Kode Barang</label>
                   <input type="text" class="form-control" placeholder="masukkan kode barang" name="kode_barang" id="kode_barang">
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="form_no_kontener">
                   <label>No. Kontener/kendaraan</label>
                   <input type="text" class="form-control" placeholder="masukkan nomor kontener/kendaraan" name="no_kontener" id="no_kontener">
                 </div>

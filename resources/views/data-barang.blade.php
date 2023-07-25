@@ -50,8 +50,9 @@
                         <td>Rp. {{ number_format($barang -> harga_barang)}}</td>
                         <td style="width: 250px;">
                             <button style="font-size: 10px;" type="button" class="btn btn-primary btn-edit" data-url="{{ url('/data-barang/edit/'.$barang->id) }}" data-toggle="modal" data-target="#edit_barang">UBAH</button>
-                            <button style="font-size: 10px;" href="javascript:void(0)" data-url="{{url('/data-barang/hapus/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-danger btn-delete">HAPUS</button>
-                            <button style="font-size: 10px;" href="javascript:void(0)" data-nama="{{$barang->nama_barang}}" data-url="{{url('/data-barang/penyusutan/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-warning btn-penyusutan">PENYUSUTAN</button>
+                            <button style="font-size: 10px;" href="javascript:void(0)" data-url="{{url('/data-barang/hapus/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-danger btn-delete">HAPUS</button> <br>
+                            <button style="font-size: 10px; margin-top: 10px;" href="javascript:void(0)" data-nama="{{$barang->nama_barang}}" data-url="{{url('/data-barang/penyusutan/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-warning btn-penyusutan">PENYUSUTAN</button>
+                            <button style="font-size: 10px; margin-top: 10px;"data-url="{{url('/data-barang/tambah-barang/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-secondary btn-tambah-stok" data-toggle="modal" data-target="#edit_barang">TAMBAH STOK</button>
                         </td>
                     </tr>
                 @endforeach
@@ -63,8 +64,8 @@
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 @section('script')
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="js/jquery.min.js" type="text/javascript"></script>
-<script src="js/jquery.dataTables.min.js" type="text/javascript"></script>
+{{-- <script src="js/jquery.min.js" type="text/javascript"></script>
+<script src="js/jquery.dataTables.min.js" type="text/javascript"></script> --}}
 <script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 <script>
     $('#myModal').on('shown.bs.modal', function () {
@@ -72,11 +73,48 @@
     })
 
     $('table').on('click', '.btn-edit',function(e){
+        $("#formModalEdit").trigger("reset");
         let url =  $(this).data('url');
-        $('#pemilik_barang').val();
+        $('#nama_modal').html('EDIT BARANG');
         $('#formModalEdit').attr('action',url);
         getData(url);
     });
+
+    $('table').on('click', '.btn-tambah-stok',function(e){
+        $("#formModalEdit").trigger("reset");
+        let url =  $(this).data('url');
+        let id_barang =  $(this).data('id');
+        $('#nama_modal').html('TAMBAH STOK');
+        $('#formModalEdit').attr('action',url);
+        console.log(id_barang);
+        getDataTambah(url, id_barang);
+    });
+
+    function getDataTambah(url, id_barang) {
+        $.ajax({
+            type: "GET",
+            url: url,
+            success: function(data){
+                console.log(data);
+                
+                $('#id_barang').val(id_barang);
+                $('#nama_barang').val(data.data_barang.nama_barang);
+                $('#form_nama_barang').attr("hidden",true);
+                $('#size').val(data.data_barang.size);
+                $('#form_size').attr("hidden",true);
+                $('#kemasan').val(data.data_barang.kemasan);
+                $('#form_kemasan').attr("hidden",true);
+                $('#harga_barang').val(data.data_barang.harga_barang);
+                $('#form_harga_barang').attr("hidden",true);
+                $('#kode_barang').val(data.data_barang.kode);
+                $('#form_kode_barang').attr("hidden",true);
+                $('#no_kontener').val(data.data_barang.no_kontener);
+                $('#form_no_kontener').attr("hidden",true);
+                $("#barang_lama").attr("hidden",false);
+                $('#tunai').attr("checked",true);
+            },
+        });
+    }
 
     function getData(url) {
         $.ajax({

@@ -45,6 +45,8 @@ Route::group(['middleware' =>  ['auth', 'admin:admin,kasir 1,kasir 2']], functio
     Route::post('/data-barang/edit/{id}', 'ControllerDataBarang@dataEdit');
     Route::get('/data-barang/hapus/{id}', 'ControllerDataBarang@hapus');
     Route::get('/data-barang/penyusutan/{id}', 'ControllerDataBarang@penyusutan');
+    Route::get('/data-barang/tambah-barang/{id}', 'ControllerDataBarang@edit');
+    Route::post('/data-barang/tambah-barang/{id}', 'ControllerDataBarang@tambahStok');
 
     //hutang
     route::get('/hutang', 'ControllerHutang@index');

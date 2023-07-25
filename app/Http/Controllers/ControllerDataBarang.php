@@ -214,4 +214,54 @@ class ControllerDataBarang extends Controller
             'message' => 'Barang Berhasil Diubah!.',
         ]); 
     }
+
+    public function tambahStok(Request $request){
+        try {
+            $data_barang = DataBarang::find($request->id_barang);
+            $data_barang->nama_barang = $request->nama_barang;
+            $data_barang->size = $request->size;
+            $data_barang->kemasan = $request->kemasan;
+            $data_barang->stok_barang = $request->jumlah_barang + $data_barang->stok_barang;
+            $data_barang->kode = $request->kode_barang;
+            $data_barang->no_kontener = $request->no_kontener;
+            $data_barang->harga_barang = $request->harga_barang;
+            $data_barang->hapus = 0;
+            $data_barang->gudang = session('gudang');
+            $data_barang->save();
+
+            $total_transaksi = $request->jumlah_barang * $request->harga_barang;
+
+            $pembayaran = New Pembayaran;
+            $pembayaran->id_data_barang = $data_barang->id;
+            $pembayaran->jumlah_uang = $request->jumlah_uang;
+            $pembayaran->metode_pembayaran = $request->metode_bayar;
+            $pembayaran->nama_bank = $request->nama_bank;
+            $pembayaran->pendapatan = 2;
+            $pembayaran->keterangan = 'Pembelian barang '.$request->nama_barang;
+            $pembayaran->save();
+
+            $hutang = new HutangPerusahaan;
+            $hutang->nama_pemilik = $request->pemilik_barang;
+            $hutang->id_barang = $data_barang->id;
+            $hutang->hutang = $total_transaksi - $request->jumlah_uang;
+            $hutang->gudang = session('gudang');
+            $hutang->save();
+
+            $transaksi = new Transaksi;
+            $transaksi->id_pembayaran = $pembayaran->id;
+            $transaksi->id_hutang_perusahaan = $hutang->id;
+            $transaksi->total_transaksi = $total_transaksi;
+            $transaksi->kekurangan = $total_transaksi - $request->jumlah_uang;
+            $transaksi->tunggakan = 1;
+            $transaksi->qty = $request->jumlah_barang;
+            $transaksi->gudang = session('gudang');
+            $transaksi->save();
+            
+            return redirect('/data-barang');
+        } catch (\Exception $e) {
+        
+            return $e->getMessage();
+        }
+        
+    }
 }
