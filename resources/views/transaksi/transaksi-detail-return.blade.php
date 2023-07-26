@@ -22,11 +22,24 @@
                         </div>
                         <div class="form-group">
                             <label>Jumlah Barang</label>
-                            <input type="number" step="any" class="form-control" placeholder="masukkan jumlah barang" name="jumlah_barang" id="jumlah_barang">
+                            <input type="text" step="any" 
+                                autocomplete="off"
+                                class="form-control inputmask" 
+                                placeholder="masukkan jumlah barang" 
+                                name="jumlah_barang" 
+                                id="jumlah_barang"
+                                data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                                'removeMaskOnSubmit': true, 'autoUnmask': true"
+                            >                        
                         </div>
                         <div class="form-group">
                             <label>Harga Barang</label>
-                            <input type="number" class="form-control" placeholder="masukkan harga barang" name="harga_barang" id="harga_barang">
+                            <input type="text" class="form-control inputmask" placeholder="masukkan harga barang" 
+                            autocomplete="off"
+                            name="harga_barang" id="harga_barang"
+                            data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                            'removeMaskOnSubmit': true, 'autoUnmask': true"
+                            >
                         </div>
                     </div>
                     <div class="row">
@@ -137,9 +150,19 @@
                             }
                         @endphp
                         @if ($transaksi[0]->transaksi->pembayaran->metode_pembayaran == 3)
-                            <input type="text" value="{{ $nominal }}" class="form-control" id="jumlah_uang" placeholder="masukkan jumlah uang" hidden name="jumlah_uang">
+                            <input type="text" value="{{ $nominal }}" class="form-control inputmask" id="jumlah_uang" 
+                                placeholder="masukkan jumlah uang" hidden name="jumlah_uang"
+                                autocomplete="off"
+                                data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                                'removeMaskOnSubmit': true, 'autoUnmask': true"
+                            >
                         @else
-                            <input type="text" value="{{ $nominal }}" class="form-control" id="jumlah_uang" placeholder="masukkan jumlah uang" name="jumlah_uang">
+                            <input type="text" value="{{ $nominal }}" class="form-control inputmask" 
+                                id="jumlah_uang" placeholder="masukkan jumlah uang" name="jumlah_uang"
+                                autocomplete="off"
+                                data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                                'removeMaskOnSubmit': true, 'autoUnmask': true"
+                            >
                         @endif
                     </div>
                     {{-- <a href="{{ url('/transaksi-detail/print/'.$transaksi[0]->transaksi->id) }}" target="_blank" class="btn btn-info" style="width: 100%">CETAK NOTA</a> --}}

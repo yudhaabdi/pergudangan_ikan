@@ -83,7 +83,17 @@ class ControllerDataBarang extends Controller
                 })
                 ->join('hutang_perusahaan', 'transaksi.id_hutang_perusahaan', '=', 'hutang_perusahaan.id')
                 ->where('pembayaran.id_data_barang', $id)
-                ->select('hutang_perusahaan.nama_pemilik', 'data_barang.*', 'pembayaran.jumlah_uang', 'pembayaran.metode_pembayaran', 'pembayaran.nama_bank')
+                ->orderBy('pembayaran.id', 'desc')
+                ->orderBy('data_barang.id', 'desc')
+                ->orderBy('hutang_perusahaan.id', 'desc')
+                ->select('hutang_perusahaan.nama_pemilik', 
+                    'data_barang.*', 
+                    'pembayaran.jumlah_uang', 
+                    'pembayaran.metode_pembayaran', 
+                    'pembayaran.nama_bank',
+                    'transaksi.total_transaksi',
+                    'transaksi.kekurangan'
+                    )
                 ->first();
         }
 
@@ -226,6 +236,7 @@ class ControllerDataBarang extends Controller
             $data_barang->no_kontener = $request->no_kontener;
             $data_barang->harga_barang = $request->harga_barang;
             $data_barang->hapus = 0;
+            $data_barang->lama = null;
             $data_barang->gudang = session('gudang');
             $data_barang->save();
 

@@ -29,11 +29,19 @@
                 </div>
                 <div class="form-group">
                   <label>Jumlah Barang (/Kg)</label>
-                  <input type="text" class="form-control" placeholder="masukkan jumlah barang" name="jumlah_barang" required>
+                  <input type="text" class="form-control inputmask" placeholder="masukkan jumlah barang" name="jumlah_barang" required
+                    autocomplete="off"
+                    data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                    'removeMaskOnSubmit': true, 'autoUnmask': true"
+                  >
                 </div>
                 <div class="form-group">
                   <label>Harga Barang</label>
-                  <input type="text" class="form-control" placeholder="masukkan harga barang" name="harga_barang" required>
+                  <input type="text" class="form-control inputmask" placeholder="masukkan harga barang" name="harga_barang" required
+                    autocomplete="off"
+                    data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                    'removeMaskOnSubmit': true, 'autoUnmask': true"
+                  >
                 </div>
                 <div class="form-group">
                   <label>Kode Barang</label>
@@ -64,7 +72,11 @@
               </div>
               <div class="form-group">
                   <label>Pembayaran</label>
-                  <input type="text" class="form-control jumlah_uang" placeholder="masukkan jumlah uang" name="jumlah_uang" id="">
+                  <input type="text" class="form-control jumlah_uang inputmask" placeholder="masukkan jumlah uang" name="jumlah_uang" id=""
+                  autocomplete="off"
+                  data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                  'removeMaskOnSubmit': true, 'autoUnmask': true"
+                  >
               </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

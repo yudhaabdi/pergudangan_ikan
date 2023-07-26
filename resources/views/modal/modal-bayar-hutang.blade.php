@@ -30,7 +30,11 @@
                 </div>
                 <div class="form-group">
                   <label>Masukkan Jumlah Uang</label>
-                  <input type="number" class="form-control" placeholder="masukkan jumlah uang" name="bayar">
+                  <input type="text" class="form-control inputmask" placeholder="masukkan jumlah uang" name="bayar"
+                    autocomplete="off"
+                    data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                    'removeMaskOnSubmit': true, 'autoUnmask': true"
+                  >
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>

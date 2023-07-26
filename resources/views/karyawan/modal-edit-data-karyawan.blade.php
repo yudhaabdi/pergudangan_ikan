@@ -25,7 +25,11 @@
                 </div>
                 <div class="form-group">
                   <label>Gaji</label>
-                  <input type="text" class="form-control" placeholder="masukkan gaji" name="gaji" id="gaji">
+                  <input type="text" class="form-control inputmask" placeholder="masukkan gaji" name="gaji" id="gaji"
+                    autocomplete="off"
+                    data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                    'removeMaskOnSubmit': true, 'autoUnmask': true"
+                  >
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>

@@ -30,11 +30,19 @@
                 </div>
                 <div class="form-group">
                   <label>Jumlah Barang (/Kg)</label>
-                  <input type="text" class="form-control" placeholder="masukkan jumlah barang" name="jumlah_barang" id="jumlah_barang">
+                  <input type="text" class="form-control inputmask" placeholder="masukkan jumlah barang" name="jumlah_barang" id="jumlah_barang"
+                    autocomplete="off"
+                    data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                    'removeMaskOnSubmit': true, 'autoUnmask': true"
+                  >
                 </div>
                 <div class="form-group" id="form_harga_barang">
                   <label>Harga Barang</label>
-                  <input type="text" class="form-control" placeholder="masukkan harga barang" name="harga_barang" id="harga_barang">
+                  <input type="text" class="form-control inputmask" placeholder="masukkan harga barang" name="harga_barang" id="harga_barang"
+                    autocomplete="off"
+                    data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                    'removeMaskOnSubmit': true, 'autoUnmask': true"
+                  >
                 </div>
                 <div class="form-group" id="form_kode_barang">
                   <label>Kode Barang</label>
@@ -67,7 +75,11 @@
                   </div>
                   <div class="form-group">
                     <label>Pembayaran</label>
-                    <input type="text" class="form-control jumlah_uang" placeholder="masukkan jumlah uang" name="jumlah_uang" id="jumlah_uang">
+                    <input type="text" class="form-control jumlah_uang inputmask" placeholder="masukkan jumlah uang" name="jumlah_uang" id="jumlah_uang"
+                      autocomplete="off"
+                      data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                      'removeMaskOnSubmit': true, 'autoUnmask': true"
+                    >
                   </div>
                 </div>
                 <div class="modal-footer">

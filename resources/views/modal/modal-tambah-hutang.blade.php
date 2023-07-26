@@ -17,7 +17,11 @@
                 </div>
                 <div class="form-group">
                   <label>Jumlah Uang</label>
-                  <input type="number" class="form-control" placeholder="masukkan jumlah uang" name="jumlah_uang">
+                  <input type="text" class="form-control inputmask" placeholder="masukkan jumlah uang" name="jumlah_uang"
+                    autocomplete="off"
+                    data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                    'removeMaskOnSubmit': true, 'autoUnmask': true"
+                  >
                 </div>
                 <div class="modal-footer">
                   <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>

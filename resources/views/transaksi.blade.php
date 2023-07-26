@@ -30,11 +30,24 @@
                         </div>
                         <div class="form-group">
                             <label>Jumlah Barang (\Kg)</label>
-                            <input type="number" step="any" class="form-control" placeholder="masukkan jumlah barang" name="jumlah_barang" id="jumlah_barang">
+                            <input type="text" step="any" 
+                                autocomplete="off"
+                                class="form-control inputmask" 
+                                placeholder="masukkan jumlah barang" 
+                                name="jumlah_barang" 
+                                id="jumlah_barang"
+                                data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                                'removeMaskOnSubmit': true, 'autoUnmask': true"
+                            >
                         </div>
                         <div class="form-group">
                             <label>Harga Barang</label>
-                            <input type="number" class="form-control" placeholder="masukkan harga barang" name="harga_barang" id="harga_barang">
+                            <input type="text" class="form-control inputmask" placeholder="masukkan harga barang" 
+                            autocomplete="off"
+                            name="harga_barang" id="harga_barang"
+                            data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                            'removeMaskOnSubmit': true, 'autoUnmask': true"
+                            >
                         </div>
                     </div>
                     <div class="row">
@@ -117,7 +130,12 @@
                     </div>
                     <div class="form-group">
                         <label>Pembayaran</label>
-                        <input type="text" class="form-control" placeholder="masukkan jumlah uang" name="jumlah_uang" id="jumlah_uang">
+                        <input type="text" class="form-control inputmask" placeholder="masukkan jumlah uang" name="jumlah_uang" id="jumlah_uang"
+                            name="harga_barang" id="harga_barang"
+                            autocomplete="off"
+                            data-inputmask="'alias': 'numeric','digits': 2,'groupSeparator':',', 'autoGroup' : true,
+                            'removeMaskOnSubmit': true, 'autoUnmask': true"
+                        >
                     </div>
                     @if (empty($cart) || count($cart) == 0)
                         <button type="submit" class="btn btn-primary" style="width: 100%" disabled>Bayar</button>

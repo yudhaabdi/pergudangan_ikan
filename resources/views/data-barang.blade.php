@@ -77,6 +77,9 @@
         let url =  $(this).data('url');
         $('#nama_modal').html('EDIT BARANG');
         $('#formModalEdit').attr('action',url);
+        $('#tunai').attr("checked",false);
+        $('#tranfer').attr("checked",false);
+        $('#hutang').attr("checked",false);
         getData(url);
     });
 
@@ -133,7 +136,12 @@
                 $('#nama_barang').val(data.data_barang.nama_barang);
                 $('#size').val(data.data_barang.size);
                 $('#kemasan').val(data.data_barang.kemasan);
-                $('#jumlah_barang').val(data.data_barang.stok_barang);
+                if (data.data_barang.lama == 1) {
+                    $('#jumlah_barang').val(data.data_barang.stok_barang);
+                }else{
+                    var stok = (data.data_barang.total_transaksi / data.data_barang.harga_barang );
+                    $('#jumlah_barang').val(stok);
+                }
                 $('#harga_barang').val(data.data_barang.harga_barang);
                 $('#kode_barang').val(data.data_barang.kode);
                 $('#no_kontener').val(data.data_barang.no_kontener);
