@@ -54,6 +54,12 @@
             </a>
           </li>
           <li>
+            <a href="{{ url('/supplier') }}">
+              <i class="nc-icon nc-circle-10"></i>
+              <p>Supplier</p>
+            </a>
+          </li>
+          <li>
             <a href="{{ url('/laporan') }}">
               <i class="nc-icon nc-single-copy-04"></i>
               <p>LAPORAN</p>

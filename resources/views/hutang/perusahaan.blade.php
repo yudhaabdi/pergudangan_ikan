@@ -31,7 +31,7 @@
                     @foreach($hutang as $key => $item)
                         <tr>
                             <td>{{ $key+1 }}</td>
-                            <td>{{ $item->nama_pemilik }}</td>
+                            <td>{{ $item->nama }}</td>
                             <td>{{ $item->dataBarang->nama_barang }}</td>
                             @if ($item->dataBarang->kode == null)
                                 <td>-</td>

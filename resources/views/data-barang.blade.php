@@ -49,9 +49,9 @@
                         <td>{{ $barang->stok_barang}} Kg</td>
                         <td>Rp. {{ number_format($barang -> harga_barang)}}</td>
                         <td style="width: 250px;">
-                            <button style="font-size: 10px;" type="button" class="btn btn-primary btn-edit" data-url="{{ url('/data-barang/'.$barang->gudang.'/edit/'.$barang->id) }}" data-toggle="modal" data-target="#edit_barang">UBAH</button>
-                            <button style="font-size: 10px;" href="javascript:void(0)" data-url="{{url('/data-barang/'.$barang->gudang.'/hapus/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-danger btn-delete">HAPUS</button>
-                            <button style="font-size: 10px;" href="javascript:void(0)" data-nama="{{$barang->nama_barang}}" data-url="{{url('/data-barang/'.$barang->gudang.'/penyusutan/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-warning btn-penyusutan">PENYUSUTAN</button>
+                            <button style="font-size: 10px;" type="button" class="btn btn-primary btn-edit" data-url="{{ url('/data-barang/edit/'.$barang->id) }}" data-toggle="modal" data-target="#edit_barang">UBAH</button>
+                            <button style="font-size: 10px;" href="javascript:void(0)" data-url="{{url('/data-barang/hapus/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-danger btn-delete">HAPUS</button>
+                            <button style="font-size: 10px;" href="javascript:void(0)" data-nama="{{$barang->nama_barang}}" data-url="{{url('/data-barang/penyusutan/'.$barang->id) }}" data-id="{{ $barang->id }}" type="button" class="btn btn-warning btn-penyusutan">PENYUSUTAN</button>
                         </td>
                     </tr>
                 @endforeach
@@ -63,9 +63,9 @@
 <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 @section('script')
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="js/jquery.min.js" type="text/javascript"></script>
+{{-- <script src="js/jquery.min.js" type="text/javascript"></script>
 <script src="js/jquery.dataTables.min.js" type="text/javascript"></script>
-<script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script> --}}
 <script>
     $('#myModal').on('shown.bs.modal', function () {
         $('#myInput').trigger('focus')
@@ -73,7 +73,6 @@
 
     $('table').on('click', '.btn-edit',function(e){
         let url =  $(this).data('url');
-        $('#pemilik_barang').val();
         $('#formModalEdit').attr('action',url);
         getData(url);
     });
@@ -90,8 +89,8 @@
                 }else{
                     $("#pemilik").attr("hidden",false);
                     $("#barang_lama").attr("hidden",false);
+                    $('#pemilik_barang').val(data.data_barang.id_supplier).change();
                 }
-                $('#pemilik_barang').val(data.data_barang.nama_pemilik);
                 $('#nama_barang').val(data.data_barang.nama_barang);
                 $('#size').val(data.data_barang.size);
                 $('#kemasan').val(data.data_barang.kemasan);

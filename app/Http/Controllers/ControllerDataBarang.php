@@ -5,6 +5,7 @@ use App\DataBarang;
 use App\Model\Pembayaran;
 use App\Model\Transaksi;
 use App\Model\HutangPerusahaan;
+use App\Model\Supplier;
 use DataTables;
 use Auth;
 
@@ -13,10 +14,10 @@ use Illuminate\Http\Request;
 class ControllerDataBarang extends Controller
 {
     public function index(){
-
+        $supplier = Supplier::all();
         $data_barang = DataBarang::where('stok_barang', '>', 0)->where('hapus', 0)->get();
       
-        return view('data-barang', ['data_barang' => $data_barang]);
+        return view('data-barang', ['data_barang' => $data_barang, 'supplier' => $supplier]);
     }
 
     public function tambah(Request $request)
@@ -44,8 +45,10 @@ class ControllerDataBarang extends Controller
             $pembayaran->keterangan = 'Pembelian barang '.$request->nama_barang;
             $pembayaran->save();
 
+            $supplier = Supplier::find($request->pemilik_barang);
+
             $hutang = new HutangPerusahaan;
-            $hutang->nama_pemilik = $request->pemilik_barang;
+            $hutang->id_supplier = $supplier->id;
             $hutang->id_barang = $data_barang->id;
             $hutang->hutang = $total_transaksi - $request->jumlah_uang;
             $hutang->save();
@@ -80,7 +83,7 @@ class ControllerDataBarang extends Controller
                 })
                 ->join('hutang_perusahaan', 'transaksi.id_hutang_perusahaan', '=', 'hutang_perusahaan.id')
                 ->where('pembayaran.id_data_barang', $id)
-                ->select('hutang_perusahaan.nama_pemilik', 'data_barang.*', 'pembayaran.jumlah_uang', 'pembayaran.metode_pembayaran', 'pembayaran.nama_bank')
+                ->select('hutang_perusahaan.id_supplier', 'data_barang.*', 'pembayaran.jumlah_uang', 'pembayaran.metode_pembayaran', 'pembayaran.nama_bank')
                 ->first();
         }
 
@@ -112,9 +115,11 @@ class ControllerDataBarang extends Controller
                 $pembayaran->nama_bank = $request->nama_bank;
                 $pembayaran->save();
 
+                $supplier = Supplier::find($request->pemilik_barang);
+
                 $hutang = HutangPerusahaan::where('id_barang', $data_barang->id)->first();
 
-                $hutang->nama_pemilik = $request->pemilik_barang;
+                $hutang->id_supplier = $supplier->id;
                 $hutang->hutang = $total_transaksi - $request->jumlah_uang;
                 $hutang->save();
 
@@ -126,7 +131,7 @@ class ControllerDataBarang extends Controller
                 $transaksi->save();
             }
             
-        } catch (\Exception $th) {
+        } catch (\Exception $e) {
             return $e->getMessage();
         }
 

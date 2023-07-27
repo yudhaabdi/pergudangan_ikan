@@ -97,5 +97,12 @@ Route::group(['middleware' =>  ['auth', 'admin:admin,kasir 1,kasir 2']], functio
     route::get('/pengaturan-akun/edit/{id}', 'ControllerTambahAkun@getData');
     route::post('/pengaturan-akun/edit/{id}', 'ControllerTambahAkun@editData');
     route::get('/pengaturan-akun/hapus/{id}', 'ControllerTambahAkun@hapus');
+
+    //supplier
+    route::get('/supplier', 'ControllerSupplier@index');
+    route::post('/supplier/tambah-supplier', 'ControllerSupplier@tambah');
+    route::get('/supplier/edit/{id}', 'ControllerSupplier@getData');
+    route::post('/supplier/edit/{id}', 'ControllerSupplier@editData');
+    route::get('/supplier/hapus/{id}', 'ControllerSupplier@hapus');
 });
 

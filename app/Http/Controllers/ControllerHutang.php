@@ -60,7 +60,10 @@ class ControllerHutang extends Controller
 
     public function perusahaan()
     {
-        $hutang = HutangPerusahaan::with(['transaksi', 'dataBarang'])->where('hutang', '>', 0)->get();
+        $hutang = HutangPerusahaan::with(['transaksi', 'dataBarang'])->where('hutang', '>', 0)
+            ->join('supplier', 'hutang_perusahaan.id_supplier', '=', 'supplier.id')
+            ->select('hutang_perusahaan.*', 'supplier.nama')
+            ->get();
         return view('hutang.perusahaan', compact('hutang'));
     }
 

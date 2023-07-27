@@ -12,8 +12,14 @@
             <form action="{{ url('data-barang/tambah') }}" method="POST" autocomplete="off" class="form-horizontal" id="formModalTambah">
                 {{ csrf_field() }}
                 <div class="form-group">
-                  <label>Pemilik Barang</label>
-                  <input type="text" class="form-control" placeholder="masukkan pemilik barang" name="pemilik_barang" required>
+                  <label>Pemilik Barang</label><br>
+                  <select style="width: 100%" class="form-control" name="pemilik_barang">
+                    <option value=""></option>
+                    @foreach ($supplier as $item)
+                        <option value="{{$item->id}}">{{$item->nama}}</option>
+                    @endforeach
+                  </select>
+                  {{-- <input type="text" class="form-control" placeholder="masukkan pemilik barang" name="pemilik_barang" required> --}}
                 </div>
                 <div class="form-group">
                   <label>Nama Barang</label>
