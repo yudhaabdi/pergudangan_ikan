@@ -59,6 +59,14 @@
               <p>Supplier</p>
             </a>
           </li>
+          @if (Auth::User()->role == 'admin')
+            <li>
+              <a href="{{ url('/akuntansi') }}">
+                <i class="nc-icon nc-money-coins"></i>
+                <p>Akuntansi</p>
+              </a>
+            </li>
+          @endif
           <li>
             <a href="{{ url('/laporan') }}">
               <i class="nc-icon nc-single-copy-04"></i>

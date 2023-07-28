@@ -104,5 +104,8 @@ Route::group(['middleware' =>  ['auth', 'admin:admin,kasir 1,kasir 2']], functio
     route::get('/supplier/edit/{id}', 'ControllerSupplier@getData');
     route::post('/supplier/edit/{id}', 'ControllerSupplier@editData');
     route::get('/supplier/hapus/{id}', 'ControllerSupplier@hapus');
+
+    //akuntansi
+    route::get('/akuntansi', 'ControllerAkuntansi@index');
 });
 
